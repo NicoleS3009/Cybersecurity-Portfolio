@@ -4,11 +4,8 @@
 Proyecto semestral de la asignatura **Criptografía** en la Universidad Tecnológica de Panamá.  
 El trabajo consistió en la evaluación de seguridad de un entorno **Active Directory Certificate Services (AD-CS)** configurado manualmente en **Windows Server 2019**, replicando vulnerabilidades comunes en infraestructuras PKI.
 
-## Integrantes
-- Hillary Brouwer  
-- Yahna Chee  
-- Camilo Rodríguez  
-- Nicole Staff  
+## Créditos
+Proyecto desarrollado en equipo como parte de la asignatura Criptografía.
 
 ## Rol personal
 - Ejecución de ataques desde Kali Linux utilizando **Certipy** y **Evil-WinRM**  
