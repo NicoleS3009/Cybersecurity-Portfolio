@@ -20,7 +20,7 @@ Este repositorio documenta una serie de ejercicios de **reconocimiento pasivo (O
 ### 2. Bypass de Ofuscación de Infraestructura (Caso: Salud/Seguros)
 * **Escenario:** Dominio empresarial protegido por un Secure Email Gateway (SpamTitan) y técnicas de *SPF Flattening*.
 * **Técnica:** Pivotaje mediante el flujo de **Login Redirect** en Microsoft 365 para validación de identidad y resolución de origen.
-* **Descubrimiento:** Se logró resolver un **Tenant compartido** (`@heathos.com`), revelando la estructura corporativa oculta y los activos reales de la organización que no eran visibles tras el dominio de contacto inicial.
+* **Descubrimiento:** Se logró resolver un **Tenant compartido**, revelando la estructura corporativa oculta y los activos reales de la organización que no eran visibles tras el dominio de contacto inicial.
 
 ### 3. Auditoría de Canales de Reclutamiento (Caso: Infraestructura Crítica)
 * **Fallo Detectado:** El canal oficial de captación de talento (`miprimerempleo@...`) se encontraba inoperante, devolviendo un error **SMTP 550 5.4.1 (Access Denied)**, lo que indica una mala configuración del filtro de destinatarios.
