@@ -1,17 +1,17 @@
-# Análisis de Cracking de Hashes
+# Hash Cracking Analysis
 
-⚠️ Laboratorio académico realizado en un entorno controlado.
-Los hashes y contraseñas han sido anonimizados.
+⚠️ Academic laboratory conducted within a controlled environment.  
+Hashes and passwords have been anonymized.
 
-## Contexto
-Laboratorio de la asignatura Criptografía enfocado en la identificación
-y evaluación de la seguridad de distintos algoritmos de hash.
+## Context
+Cryptography course laboratory focused on identifying and evaluating 
+the security of various hashing algorithms.
 
-## Objetivo
-Comprender la resistencia de distintos algoritmos de hash frente a
-ataques de cracking y diccionario.
+## Objective
+Understand the resistance of different hashing algorithms against 
+cracking and dictionary attacks.
 
-## Algoritmos analizados
+## Analyzed Algorithms
 - MD4
 - MD5
 - SHA1
@@ -20,23 +20,23 @@ ataques de cracking y diccionario.
 - bcrypt
 - sha512crypt
 
-## Metodología
-- Identificación del tipo de hash
-- Evaluación de su resistencia
-- Uso de herramientas de cracking (online y locales)
-- Comparación entre hashes rápidos y hashes diseñados para contraseñas
+## Methodology
+- Hash type identification
+- Evaluation of resistance
+- Use of cracking tools (online and local)
+- Comparison between fast hashes and hashes designed for passwords
 
-## Resultados
-- Los algoritmos rápidos (MD4, MD5, SHA1) resultaron altamente vulnerables
-- NTLM presentó debilidades frente a ataques de diccionario
-- bcrypt y sha512crypt mostraron mayor resistencia debido al uso de salt
-  y funciones de derivación de claves
+## Results
+- Fast algorithms (MD4, MD5, SHA1) proved to be highly vulnerable
+- NTLM exhibited weaknesses against dictionary attacks
+- bcrypt and sha512crypt showed greater resistance due to the use of salting 
+  and key derivation functions
 
-## Mitigación
-- Uso de algoritmos resistentes como bcrypt, Argon2 o scrypt
-- Implementación de políticas de contraseñas fuertes
-- Uso de salting y control de intentos
+## Mitigation
+- Use of resistant algorithms such as bcrypt, Argon2, or scrypt
+- Implementation of strong password policies
+- Use of salting and attempt rate limiting
 
-## Aprendizaje
-Comprensión práctica de por qué los algoritmos de hash débiles
-no deben utilizarse para almacenamiento de contraseñas.
+## Key Takeaways
+Practical understanding of why weak hashing algorithms 
+must not be used for storing passwords.
