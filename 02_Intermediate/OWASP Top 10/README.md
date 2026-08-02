@@ -1,62 +1,62 @@
-# Laboratorio Pentest: Burp Suite - OWASP Juice Shop
+# Pentest Laboratory: Burp Suite - OWASP Juice Shop
 
 ---
 
-## 📌 Resumen Ejecutivo
+## 📌 Executive Summary
 
-Se llevó a cabo una evaluación de seguridad sobre la aplicación web **OWASP Juice Shop** con fines formativos y de práctica en análisis de vulnerabilidades. Durante el proceso se identificaron **10 fallos de seguridad**, de los cuales **5 fueron clasificados como de severidad crítica** debido al nivel de riesgo que representan para la confidencialidad, integridad y disponibilidad del sistema.
-
----
-
-## ⚙️ Setup Completo
-
-* **Burp Suite** + Proxy del navegador
-* **Docker** instalado
-* **Scope** delimitado en la aplicación de pruebas local (`http://localhost:3000`)
+A security assessment was conducted on the **OWASP Juice Shop** web application for educational and vulnerability analysis practice purposes. During the process, **10 security flaws** were identified, of which **5 were classified as critical severity** due to the level of risk they pose to the system's confidentiality, integrity, and availability.
 
 ---
 
-## 📊 Resumen de Hallazgos
+## ⚙️ Complete Setup
 
-| Vulnerabilidad | Severidad | OWASP | Estado |
+* **Burp Suite** + Browser Proxy
+* **Docker** installed
+* **Scope** limited to the local testing application (`http://localhost:3000`)
+
+---
+
+## 📊 Summary of Findings
+
+| Vulnerability | Severity | OWASP | Status |
 | :--- | :---: | :---: | :---: |
-| Admin Panel - Broken Access Control | Crítica | A01 | Confirmado |
-| SQL Injection - Login Bypass | Crítica | A02 | Confirmado |
-| DOM XSS | Crítica | A05 | Confirmado |
-| Bonus Payload | Crítica | A05 | Confirmado |
-| Admin Registration | Alta | A01 | Confirmado |
-| IDOR - Acceso a Perfil de Otro Usuario | Crítica | A01 | Confirmado |
-| Directory Listing — `/ftp` Expuesto | Media | A01 | Confirmado |
-| Error Handling | Media | A02 | Confirmado |
-| API Data Exposure — Enumerar Usuarios | Media | A01 | Confirmado |
-| Broken Auth — Sin Rate Limiting en Login | Media | A07 | Confirmado |
+| Admin Panel - Broken Access Control | Critical | A01 | Confirmed |
+| SQL Injection - Login Bypass | Critical | A02 | Confirmed |
+| DOM XSS | Critical | A05 | Confirmed |
+| Bonus Payload | Critical | A05 | Confirmed |
+| Admin Registration | High | A01 | Confirmed |
+| IDOR - Access to Another User's Profile | Critical | A01 | Confirmed |
+| Directory Listing — `/ftp` Exposed | Medium | A01 | Confirmed |
+| Error Handling | Medium | A02 | Confirmed |
+| API Data Exposure — Enumerate Users | Medium | A01 | Confirmed |
+| Broken Auth — No Rate Limiting on Login | Medium | A07 | Confirmed |
 
 ---
 
-## 📝 Hallazgos Detallados (Write-ups)
+## 📝 Detailed Findings (Write-ups)
 
 ### Write-up 1: Admin Panel - Broken Access Control
 
-* **Severidad:** CWE-284: Improper Access Control
-* **Descripción:** Se identificó que la aplicación web expone un panel de administración accesible sin autenticación ni validación de privilegios. Esto permite que cualquier usuario no autenticado pueda acceder a funcionalidades administrativas simplemente conociendo o descubriendo la ruta.
+* **Severity:** CWE-284: Improper Access Control
+* **Description:** The web application exposes an administration panel that is accessible without authentication or privilege validation. This allows any unauthenticated user to access administrative functionalities simply by knowing or discovering the path.
 
-#### Pasos a reproducir
-1. Acceder a la aplicación en `http://localhost:3000`.
-2. Revisar el Site Map generado o inspeccionar manualmente los recursos cargados.
-3. Analizar el archivo `main.js` para identificar rutas ocultas.
-4. Encontrar referencia a la ruta `/admin`.
-5. Navegar directamente a `http://localhost:3000/admin`.
-6. Confirmar el acceso al área restringida.
+#### Steps to Reproduce
+1. Access the application at `http://localhost:3000`.
+2. Review the generated Site Map or manually inspect the loaded resources.
+3. Analyze the `main.js` file to identify hidden routes.
+4. Find a reference to the `/admin` path.
+5. Navigate directly to `http://localhost:3000/admin`.
+6. Confirm access to the restricted area.
 
-#### Impacto Real
-* Acceso no autorizado a funcionalidades administrativas y posible manipulación de datos sensibles.
-* Riesgo de escalamiento de privilegios y compromiso total de la aplicación.
+#### Real Impact
+* Unauthorized access to administrative functionalities and possible manipulation of sensitive data.
+* Risk of privilege escalation and complete compromise of the application.
 
-#### Remediación
-* Requerir autenticación obligatoria para acceder a `/admin` y aplicar controles RBAC.
-* Evitar exponer rutas sensibles en archivos JavaScript públicos.
+#### Remediation
+* Require mandatory authentication to access `/admin` and apply RBAC controls.
+* Avoid exposing sensitive routes in public JavaScript files.
 
-#### Referencias
+#### References
 * [OWASP Top 10 – A01:2025 Broken Access Control](https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/)
 * [CWE-284: Improper Access Control](https://cwe.mitre.org/data/definitions/284.html)
 
@@ -64,24 +64,24 @@ Se llevó a cabo una evaluación de seguridad sobre la aplicación web **OWASP J
 
 ### Write-up 2: SQL Injection - Login Bypass
 
-* **Severidad:** CWE-89 – Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
-* **Descripción:** El parámetro `email` en el endpoint de autenticación no valida ni sanitiza la entrada del usuario antes de utilizarla en una consulta SQL, lo que permite manipular la lógica y eludir la autenticación.
+* **Severity:** CWE-89 – Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
+* **Description:** The `email` parameter in the authentication endpoint does not validate or sanitize user input before using it in an SQL query, allowing the logic to be manipulated to bypass authentication.
 
-#### Pasos a reproducir
-1. Acceder a la página de Login de la aplicación.
-2. Interceptar la solicitud `POST /rest/user/login` con Burp Suite.
-3. Modificar el cuerpo JSON reemplazando el valor del campo `email` por un payload SQL (ej. `' OR 1=1--`).
-4. Enviar la solicitud y verificar que se devuelve un token JWT con privilegios elevados.
+#### Steps to Reproduce
+1. Access the application's Login page.
+2. Intercept the `POST /rest/user/login` request using Burp Suite.
+3. Modify the JSON body by replacing the value of the `email` field with an SQL payload (e.g., `' OR 1=1--`).
+4. Send the request and verify that a JWT token with elevated privileges is returned.
 
-#### Impacto Real
-* Acceso no autorizado a cuentas de usuarios (incluyendo administradores).
-* Modificación, eliminación o exfiltración masiva de datos.
+#### Real Impact
+* Unauthorized access to user accounts (including administrators).
+* Massive data modification, deletion, or exfiltration.
 
-#### Remediación
-* Implementar consultas parametrizadas (*prepared statements*) en todas las operaciones SQL.
-* Validar y sanitizar estrictamente las entradas del usuario.
+#### Remediation
+* Implement parameterized queries (*prepared statements*) for all SQL operations.
+* Strictly validate and sanitize user inputs.
 
-#### Referencias
+#### References
 * [OWASP Top 10 - A05:2025 Injection](https://owasp.org/Top10/2025/A05_2025-Injection/)
 * [CWE-89: SQL Injection](https://cwe.mitre.org/data/definitions/89.html)
 
@@ -89,21 +89,21 @@ Se llevó a cabo una evaluación de seguridad sobre la aplicación web **OWASP J
 
 ### Write-up 3: DOM XSS
 
-* **Severidad:** CWE-79 – Improper Neutralization of Input During Web Page Generation ('Cross-Site Scripting')
-* **Descripción:** La aplicación procesa datos no confiables provenientes de la URL o del DOM directamente en el navegador mediante JavaScript sin la debida sanitización.
+* **Severity:** CWE-79 – Improper Neutralization of Input During Web Page Generation ('Cross-Site Scripting')
+* **Description:** The application processes untrusted data from the URL or DOM directly in the browser via JavaScript without proper sanitization.
 
-#### Pasos a reproducir
-1. En la barra de búsqueda, ingresar el payload: `<iframe src="javascript:alert('DOM_XSS')">`.
-2. Presionar Enter y observar la ejecución de la alerta de JavaScript.
+#### Steps to Reproduce
+1. In the search bar, enter the payload: `<iframe src="javascript:alert('DOM_XSS')">`.
+2. Press Enter and observe the execution of the JavaScript alert.
 
-#### Impacto Real
-* Ejecución arbitraria de JavaScript, robo de tokens de sesión/JWT y suplantación de identidad.
+#### Real Impact
+* Arbitrary execution of JavaScript, session/JWT token theft, and identity spoofing.
 
-#### Remediación
-* Evitar funciones inseguras como `innerHTML` o `document.write`; utilizar `textContent` o `innerText`.
-* Implementar Content Security Policy (CSP).
+#### Remediation
+* Avoid unsafe functions such as `innerHTML` or `document.write`; use `textContent` or `innerText` instead.
+* Implement a Content Security Policy (CSP).
 
-#### Referencias
+#### References
 * [OWASP Top 10 - A05:2025 Injection](https://owasp.org/Top10/2025/A05_2025-Injection/)
 * [CWE-79: Cross-Site Scripting](https://cwe.mitre.org/data/definitions/79.html)
 
@@ -111,134 +111,134 @@ Se llevó a cabo una evaluación de seguridad sobre la aplicación web **OWASP J
 
 ### Write-up 4: Bonus Payload (HTML Injection)
 
-* **Severidad:** CWE-79 – Improper Neutralization of Input During Web Page Generation ('Cross-Site Scripting')
-* **Descripción:** Se comprobó que el sink vulnerable en el cliente no solo ejecuta JavaScript, sino que permite la inyección de elementos HTML arbitrarios (como `<iframe>` con fuentes externas).
+* **Severity:** CWE-79 – Improper Neutralization of Input During Web Page Generation ('Cross-Site Scripting')
+* **Description:** It was confirmed that the vulnerable sink on the client side not only executes JavaScript but also allows the injection of arbitrary HTML elements (such as an `<iframe>` loading external sources).
 
-#### Pasos a reproducir
-1. Sustituir el parámetro de búsqueda por un payload HTML con un iframe de un dominio externo.
-2. Cargar la página y verificar que el recurso externo se renderiza dentro del DOM.
+#### Steps to Reproduce
+1. Replace the search parameter with an HTML payload containing an iframe from an external domain.
+2. Load the page and verify that the external resource is rendered within the DOM.
 
-#### Impacto Real
-* Phishing visual dentro de la aplicación y manipulación de la interfaz gráfica.
+#### Real Impact
+* Visual phishing within the application and manipulation of the graphical interface.
 
-#### Remediación
-* Utilizar librerías de sanitización como DOMPurify y configurar restricciones CSP para iframes.
+#### Remediation
+* Use sanitization libraries like DOMPurify and configure CSP restrictions for iframes.
 
 ---
 
 ### Write-up 5: Admin Registration
 
-* **Severidad:** CWE-639 - Authorization Bypass Through User-Controlled Key
-* **Descripción:** El endpoint de registro confía en parámetros enviados desde el cliente para asignar el rol de usuario, permitiendo registrar cuentas administrativas sin controles en el servidor.
+* **Severity:** CWE-639 - Authorization Bypass Through User-Controlled Key
+* **Description:** The registration endpoint trusts parameters sent from the client to assign the user role, allowing the registration of administrative accounts without server-side controls.
 
-#### Pasos a reproducir
-1. Interceptar la solicitud `POST /api/Users` al registrar un usuario.
-2. Modificar el JSON agregando o cambiando el parámetro que define el rol a administrador.
-3. Enviar la petición y confirmar la creación de la cuenta privilegiada.
+#### Steps to Reproduce
+1. Intercept the `POST /api/Users` request when registering a new user.
+2. Modify the JSON by adding or changing the parameter that defines the role to administrator.
+3. Send the request and confirm the creation of the privileged account.
 
-#### Impacto Real
-* Creación no autorizada de cuentas administrativas y compromiso total del sistema.
+#### Real Impact
+* Unauthorized creation of administrative accounts leading to total system compromise.
 
-#### Remediación
-* Asignar roles únicamente desde la lógica interna del backend y eliminar cualquier parámetro de rol en el request del cliente.
-
----
-
-### Write-up 6: IDOR — Acceso a Perfil de Otro Usuario
-
-* **Severidad:** CWE-639 - Authorization Bypass Through User-Controlled Key
-* **Descripción:** El sistema expone identificadores directos en solicitudes API que no validan si el usuario autenticado tiene permisos para acceder al recurso solicitado.
-
-#### Pasos a reproducir
-1. Iniciar sesión y realizar una petición a una ruta que recupere un recurso por ID (ej. `/api/orders/101`).
-2. Interceptar la petición en Burp Repeater y modificar el ID (ej. pasar de `101` a `102`).
-3. Verificar que el servidor responde con los datos del recurso ajeno.
-
-#### Impacto Real
-* Escalada horizontal de privilegios y fuga de información personal de otros usuarios.
-
-#### Remediación
-* Validar en backend que el objeto pertenezca al usuario autenticado e implementar UUIDs.
+#### Remediation
+* Assign roles solely from internal backend logic and eliminate any role parameters from client requests.
 
 ---
 
-### Write-up 7: Directory Listing — `/ftp` Expuesto
+### Write-up 6: IDOR — Access to Another User's Profile
 
-* **Severidad:** CWE-548 – Exposure of Information Through Directory Listing
-* **Descripción:** El directorio `/ftp` está expuesto públicamente, permitiendo navegar por la estructura de carpetas y descargar archivos internos sin autenticación.
+* **Severity:** CWE-639 - Authorization Bypass Through User-Controlled Key
+* **Description:** The system exposes direct identifiers in API requests without validating whether the authenticated user has permissions to access the requested resource.
 
-#### Pasos a reproducir
-1. Navegar a `http://localhost:3000/ftp`.
-2. Observar el listado de archivos expuesto por el servidor web.
-3. Descargar archivos para verificar contenido confidencial.
+#### Steps to Reproduce
+1. Log in and make a request to a route that retrieves a resource by ID (e.g., `/api/orders/101`).
+2. Intercept the request in Burp Repeater and modify the ID (e.g., change `101` to `102`).
+3. Verify that the server responds with the data of the other user's resource.
 
-#### Impacto Real
-* Filtración de información sensible, logs o credenciales almacenadas en archivos internos.
+#### Real Impact
+* Horizontal privilege escalation and leakage of other users' personal information.
 
-#### Remediación
-* Deshabilitar el Directory Listing en el servidor web y mover archivos sensibles fuera de la raíz web.
+#### Remediation
+* Validate on the backend that the object belongs to the authenticated user and implement UUIDs instead of sequential IDs.
+
+---
+
+### Write-up 7: Directory Listing — `/ftp` Exposed
+
+* **Severity:** CWE-548 – Exposure of Information Through Directory Listing
+* **Description:** The `/ftp` directory is publicly exposed, allowing navigation through the folder structure and downloading of internal files without authentication.
+
+#### Steps to Reproduce
+1. Navigate to `http://localhost:3000/ftp`.
+2. Observe the file listing exposed by the web server.
+3. Download files to check for confidential content.
+
+#### Real Impact
+* Leakage of sensitive information, logs, or credentials stored in internal files.
+
+#### Remediation
+* Disable Directory Listing on the web server and move sensitive files outside the web root.
 
 ---
 
 ### Write-up 8: Error Handling
 
-* **Severidad:** CWE-209: Generation of Error Message Containing Sensitive Information
-* **Descripción:** Al enviar solicitudes malformadas al backend, la aplicación responde con un error HTTP 500 que incluye el Stack Trace completo del entorno.
+* **Severity:** CWE-209: Generation of Error Message Containing Sensitive Information
+* **Description:** When sending malformed requests to the backend, the application responds with an HTTP 500 error that includes the environment's full Stack Trace.
 
-#### Pasos a reproducir
-1. Interceptar una petición a `/api/Feedbacks`.
-2. Omitir un carácter estructural en el JSON para generar un error sintáctico.
-3. Enviar la petición y analizar la respuesta con detalles de código y rutas absolutas.
+#### Steps to Reproduce
+1. Intercept a request to `/api/Feedbacks`.
+2. Omit a structural character in the JSON body to generate a syntax error.
+3. Send the request and analyze the response containing code details and absolute paths.
 
-#### Impacto Real
-* Fuga de información técnica (versiones de librerías, rutas en servidor, lógica interna).
+#### Real Impact
+* Technical information leakage (library versions, server paths, internal logic).
 
-#### Remediación
-* Implementar un manejador global de excepciones para devolver mensajes de error genéricos en producción.
-
----
-
-### Write-up 9: API Data Exposure — Enumerar Usuarios
-
-* **Severidad:** CWE-213: Exposure of Sensitive Information Due to Incompatible Policies
-* **Descripción:** El endpoint `/api/Users` permite a cualquier usuario autenticado consultar la lista completa de usuarios registrados sin requerir rol administrativo.
-
-#### Pasos a reproducir
-1. Iniciar sesión con un usuario común y obtener el token JWT.
-2. Realizar una petición `GET` a `/api/Users` incluyendo la cabecera `Authorization: Bearer [token]`.
-3. Analizar la respuesta JSON con la lista completa de registros.
-
-#### Impacto Real
-* Fuga masiva de PII (correos, roles, datos de acceso).
-
-#### Remediación
-* Restringir el acceso a la lista completa de usuarios únicamente a roles de administración.
+#### Remediation
+* Implement a global exception handler to return generic error messages in production.
 
 ---
 
-### Write-up 10: Broken Auth — Sin Rate Limiting en Login
+### Write-up 9: API Data Exposure — Enumerate Users
 
-* **Severidad:** CWE-307: Improper Restriction of Excessive Authentication Attempts
-* **Descripción:** La interfaz de inicio de sesión no restringe la cantidad de intentos fallidos consecutivas, permitiendo ataques de fuerza bruta automatizados.
+* **Severity:** CWE-213: Exposure of Sensitive Information Due to Incompatible Policies
+* **Description:** The `/api/Users` endpoint allows any authenticated user to query the complete list of registered users without requiring an administrative role.
 
-#### Pasos a reproducir
-1. Capturar la petición `POST /rest/user/login` y enviarla a Burp Intruder.
-2. Configurar un ataque de diccionario sobre el campo `password`.
-3. Ejecutar la ráfaga de peticiones y verificar que ninguna es bloqueada ni ralentizada.
+#### Steps to Reproduce
+1. Log in with a standard user account and obtain the JWT token.
+2. Make a `GET` request to `/api/Users` including the `Authorization: Bearer [token]` header.
+3. Analyze the JSON response containing the full list of records.
 
-#### Impacto Real
-* Compromiso de cuentas mediante *credential stuffing* o ataques de diccionario.
+#### Real Impact
+* Massive leakage of PII (emails, roles, access data).
 
-#### Remediación
-* Implementar políticas de bloqueo temporal, throttling (retardos) o uso de CAPTCHA tras varios intentos fallidos.
+#### Remediation
+* Restrict access to the complete user list exclusively to administration roles.
 
 ---
 
-## 🎯 Conclusiones y Recomendaciones
+### Write-up 10: Broken Auth — No Rate Limiting on Login
 
-El análisis demostró que las vulnerabilidades críticas más apremiantes residen en el mecanismo de autenticación (**Inyección SQL**) y en un control de acceso deficiente (**Admin Panel y Registro de Admins**). 
+* **Severity:** CWE-307: Improper Restriction of Excessive Authentication Attempts
+* **Description:** The login interface does not restrict the number of consecutive failed attempts, permitting automated brute-force attacks.
 
-**Prioridades de remediación:**
-1. **Fase 1 (Inmediata):** Sanitización de consultas SQL (prepared statements) y cierre de endpoints administrativos expuestos sin control de acceso.
-2. **Fase 2:** Implementación de validaciones en el servidor para evitar IDORs y la asignación arbitraria de roles.
-3. **Fase 3:** Hardening general del servidor web (desactivación de directory listing, manejo seguro de errores y adición de rate limiting).
+#### Steps to Reproduce
+1. Capture the `POST /rest/user/login` request and send it to Burp Intruder.
+2. Set up a dictionary attack on the `password` field.
+3. Execute the burst of requests and verify that none are blocked or rate-limited.
+
+#### Real Impact
+* Account compromise via credential stuffing or dictionary attacks.
+
+#### Remediation
+* Implement temporary lockout policies, throttling (delays), or CAPTCHAs after several failed attempts.
+
+---
+
+## 🎯 Conclusions and Recommendations
+
+The analysis demonstrated that the most pressing critical vulnerabilities reside in the authentication mechanism (**SQL Injection**) and poor access controls (**Admin Panel and Admin Registration**).
+
+**Remediation Priorities:**
+1. **Phase 1 (Immediate):** Sanitize SQL queries (prepared statements) and close unauthenticated administrative endpoints.
+2. **Phase 2:** Implement server-side validations to prevent IDORs and arbitrary role assignment.
+3. **Phase 3:** General web server hardening (disable directory listing, implement secure error handling, and add rate limiting).
