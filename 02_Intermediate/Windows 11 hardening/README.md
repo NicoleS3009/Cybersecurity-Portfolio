@@ -1,131 +1,132 @@
-# Windows 11 Hardening: Cifrado, Superficie de Ataque y Telemetría
+# Windows 11 Hardening: Encryption, Attack Surface & Telemetry
 
-## Contexto
-Laboratorio de la asignatura Gestión de Almacenamiento de Información, Universidad Tecnológica de Panamá. El ejercicio consistió en tomar una máquina virtual Windows 11 recién instalada ("out-of-the-box") y aplicarle un proceso de endurecimiento (hardening) completo, validando el resultado con auditorías de red antes y después del proceso.
+## Context
+Laboratory for the Information Storage Management course at Technological University of Panama. The exercise consisted of taking a freshly installed ("out-of-the-box") Windows 11 virtual machine and applying a comprehensive hardening process, validating the results with network audits before and after the procedure.
 
-## Objetivo
-Reducir la superficie de ataque de una estación de trabajo Windows 11 mediante tres frentes: cifrado de disco en reposo, cierre de servicios/puertos innecesarios, y mitigación de fuga de datos por telemetría — automatizando el proceso completo en un script de PowerShell reutilizable.
+## Objective
+Reduce the attack surface of a Windows 11 workstation across three fronts: disk encryption at rest, closure of unnecessary services/ports, and mitigation of data leakage via telemetry — fully automating the entire process into a reusable PowerShell script.
 
-## Tecnologías
-- Windows 11 (PowerShell, Administración de discos, Editor de directivas)
+## Technologies
+- Windows 11 (PowerShell, Disk Management, Local Group Policy Editor)
 - BitLocker + TPM 2.0
-- Nmap (auditoría de puertos)
+- Nmap (port auditing)
 - PowerShell scripting (`.ps1`)
 
-## Metodología
+## Methodology
 
-El laboratorio se dividió en 4 fases:
+The laboratory was divided into 4 phases:
 
-1. **Auditoría de línea base** — estado inicial "out-of-the-box" del sistema.
-2. **Ejecución del hardening** — aplicación de las medidas en 3 bloques (cifrado, servicios, privacidad).
-3. **Automatización** — script `.ps1` que replica todo el proceso de forma repetible.
-4. **Verificación final** — re-auditoría para confirmar el efecto de los cambios.
+1. **Baseline Audit** — initial "out-of-the-box" state of the system.
+2. **Hardening Execution** — application of security measures across 3 blocks (encryption, services, privacy).
+3. **Automation** — a `.ps1` script that replicates the entire process in a repeatable manner.
+4. **Final Verification** — re-audit to confirm the impact of the changes.
 
-## Implementación
+## Implementation
 
-### Fase 1: Auditoría de línea base (el "antes")
+### Phase 1: Baseline Audit (The "Before")
 
-Se identificaron los servicios expuestos por defecto con `netstat -an` y un escaneo Nmap dirigido:
+Exposed services were identified by default using `netstat -an` alongside a targeted Nmap scan:
 
-![Estado inicial de conexiones con netstat -an](screenshots/01-netstat-baseline.png)
-![Escaneo Nmap sobre los puertos identificados](screenshots/02-nmap-escaneo-inicial.png)
+![Initial connection state with netstat -an](screenshots/01-netstat-baseline.png)
+![Nmap scan on identified ports](screenshots/02-nmap-escaneo-inicial.png)
 
-Se detectaron como críticos:
-- **Puerto 445 (SMB)** — expuesto por defecto, riesgo de ejecución remota de código.
-- **Puerto 135 (RPC)** — usado para Registro Remoto, facilita enumeración del sistema.
-- **Puerto 5985 (WinRM)** — administración remota activa innecesariamente en una estación de trabajo.
+The following were flagged as critical:
+- **Port 445 (SMB)** — exposed by default, risk of remote code execution.
+- **Port 135 (RPC)** — used for Remote Registry, facilitates system enumeration.
+- **Port 5985 (WinRM)** — remote management unnecessarily active on a workstation.
 
-También se exportó el listado completo de servicios activos para revisión:
+Additionally, a complete list of active services was exported for review:
 
-![Lista de servicios exportada a Excel](screenshots/03-lista-servicios-exportada.png)
+![List of services exported to Excel](screenshots/03-lista-servicios-exportada.png)
 
-De ahí se identificaron **Print Spooler** (vulnerable a PrintNightmare, CVE-2021-34527), **Remote Registry** y los **servicios de Xbox** (innecesarios en un entorno corporativo, principio de mínima funcionalidad) como candidatos a deshabilitar.
+From this review, **Print Spooler** (vulnerable to PrintNightmare, CVE-2021-34527), **Remote Registry**, and **Xbox services** (unnecessary in an enterprise environment based on the principle of least functionality) were identified as candidates for disabling.
 
-En cuanto al almacenamiento, se confirmó mediante `Get-BitLockerVolume` que el disco principal no tenía cifrado activo (`Protection Status: Off`), y se verificó la disponibilidad del chip TPM:
+Regarding storage, `Get-BitLockerVolume` confirmed that the main drive had no active encryption (`Protection Status: Off`), and the availability of the TPM chip was verified:
 
-![Administración de TPM en el equipo](screenshots/04-tpm-administracion.png)
-![BitLocker desactivado en el estado inicial](screenshots/05-bitlocker-desactivado-inicial.png)
+![TPM management on the host](screenshots/04-tpm-administracion.png)
+![BitLocker disabled in the initial state](screenshots/05-bitlocker-desactivado-inicial.png)
 
-Por último, se auditó el panel de privacidad, encontrando la telemetría en nivel **'Full'** y el identificador de publicidad activo:
+Finally, the privacy panel was audited, showing telemetry set to **'Full'** and the advertising ID active:
 
-![Panel de privacidad con telemetría y publicidad activas](screenshots/06-telemetria-privacidad-inicial.png)
+![Privacy panel with telemetry and advertising active](screenshots/06-telemetria-privacidad-inicial.png)
 
-### Fase 2: Ejecución del hardening
+### Phase 2: Hardening Execution
 
-**Bloque 1 — Cifrado de disco (BitLocker)**
+**Block 1 — Disk Encryption (BitLocker)**
 
-Se verificó que el chip TPM estuviera listo y activo:
+The TPM chip was verified to be ready and active:
 
-![Verificación del chip TPM con Get-Tpm](screenshots/07-get-tpm-verificacion.png)
+![TPM chip verification with Get-Tpm](screenshots/07-get-tpm-verificacion.png)
 
-Se configuró la directiva **TPM+PIN** (autenticación adicional al inicio) antes de activar BitLocker, para evitar conflictos de directiva:
+The **TPM+PIN** policy (additional startup authentication) was configured prior to activating BitLocker to avoid policy conflicts:
 
-![Configuración de la directiva TPM+PIN](screenshots/08-directiva-tpm-pin.png)
+![TPM+PIN policy configuration](screenshots/08-directiva-tpm-pin.png)
 
-Se ejecutó `Enable-BitLocker` con cifrado AES-256 y protector TPM+PIN, y se añadió una clave de recuperación de respaldo con `Add-BitLockerKeyProtector` antes de reiniciar:
+`Enable-BitLocker` was executed with AES-256 encryption and TPM+PIN protection, adding a backup recovery key via `Add-BitLockerKeyProtector` before rebooting:
 
-![Ejecución de Enable-BitLocker solicitando el PIN](screenshots/09-enable-bitlocker-pin.png)
+![Execution of Enable-BitLocker requesting the PIN](screenshots/09-enable-bitlocker-pin.png)
 
-Al reiniciar, el sistema solicitó el PIN configurado para desbloquear la unidad:
+Upon reboot, the system requested the configured PIN to unlock the drive:
 
-![Pantalla de BitLocker solicitando el PIN al arrancar](screenshots/10-bitlocker-pin-boot.png)
+![BitLocker screen requesting PIN at boot](screenshots/10-bitlocker-pin-boot.png)
 
-**Bloque 2 — Reducción de superficie: servicios de Windows**
+**Block 2 — Attack Surface Reduction: Windows Services**
 
-Se listaron los servicios en ejecución y se exportó el resultado para su revisión:
+Running services were listed, and the results were exported for review:
 
-![Servicios en ejecución con Get-Service](screenshots/11-get-service-running.png)
-![Exportación de servicios a CSV](screenshots/12-export-csv-servicios.png)
+![Running services with Get-Service](screenshots/11-get-service-running.png)
+![Service list exported to CSV](screenshots/12-export-csv-servicios.png)
 
-Se deshabilitaron los servicios identificados como innecesarios: **Remote Registry**, **Print Spooler**, **WinRM** y los servicios de **Xbox**, además de desactivar el protocolo **SMBv1**:
+Unnecessary services identified earlier were disabled: **Remote Registry**, **Print Spooler**, **WinRM**, and **Xbox services**, alongside disabling the **SMBv1** protocol:
 
-![Deshabilitación de servicios innecesarios](screenshots/13-deshabilitar-servicios.png)
+![Disabling unnecessary services](screenshots/13-deshabilitar-servicios.png)
 
-**Bloque 3 — Privacidad y telemetría**
+**Block 3 — Privacy & Telemetry**
 
-Mediante llaves de registro se configuró la telemetría en **Nivel 0 (Security)**, se deshabilitó Cortana, se detuvieron servicios de rastreo (DiagTrack, dmwappushservice, SysMain), se desactivó la tarea programada de Customer Experience Improvement Program, y se deshabilitaron **LLMNR**, **NetBIOS** y **WPAD** para reducir vectores de ataque de resolución de nombres (relevante frente a ataques tipo Responder):
+Using registry keys, telemetry was configured to **Level 0 (Security)**, Cortana was disabled, diagnostic and tracking services were stopped (DiagTrack, dmwappushservice, SysMain), the Customer Experience Improvement Program scheduled task was turned off, and **LLMNR**, **NetBIOS**, and **WPAD** were disabled to reduce name resolution attack vectors (relevant against Responder-style attacks):
 
-![Script de hardening de telemetría, LLMNR y NetBIOS](screenshots/14-script-telemetria-llmnr-netbios.png)
+![Telemetry, LLMNR, and NetBIOS hardening script](screenshots/14-script-telemetria-llmnr-netbios.png)
 
-Se actualizaron las directivas del sistema para aplicar los cambios:
+System policies were updated to apply the changes:
 
-![Actualización de directivas con gpupdate /force](screenshots/15-gpupdate-force.png)
+![Updating policies with gpupdate /force](screenshots/15-gpupdate-force.png)
 
-### Fase 3: Automatización (script `.ps1`)
+### Phase 3: Automation (`.ps1` script)
 
-Todo el proceso anterior se consolidó en un script de PowerShell (`Hardening.ps1`) que automatiza:
-1. Deshabilitación de servicios peligrosos (`Spooler`, `RemoteRegistry`, `WinRM`, `SMB1`).
-2. Ajuste de telemetría a Nivel 0.
-3. Desactivación del identificador de publicidad.
-4. Bloqueo de NetBIOS/LLMNR.
-5. Verificación final del estado de BitLocker.
+The entire process was consolidated into a PowerShell script (`Hardening.ps1`) automating:
+1. Disabling dangerous services (`Spooler`, `RemoteRegistry`, `WinRM`, `SMB1`).
+2. Setting telemetry to Level 0.
+3. Turning off the advertising ID.
+4. Blocking NetBIOS/LLMNR.
+5. Verifying final BitLocker status.
 
-Esto garantiza que el hardening sea **repetible y libre de errores humanos** al aplicarlo en múltiples máquinas.
+This ensures the hardening process is **repeatable and free of human error** when deployed across multiple machines.
 
-### Fase 4: Verificación final (el "después")
+### Phase 4: Final Verification (The "After")
 
-Se repitió el escaneo Nmap sobre la misma IP para confirmar la reducción de la superficie expuesta:
+The Nmap scan was repeated on the same IP to confirm the reduction of the exposed surface:
 
-![Escaneo Nmap final tras el hardening](screenshots/16-nmap-final-verificacion.png)
+![Final Nmap scan after hardening](screenshots/16-nmap-final-verificacion.png)
 
-Y se verificó el estado de cada bloque aplicado:
+The status of each applied block was verified:
 
-![BitLocker completamente cifrado y activo](screenshots/17-bitlocker-final-encriptado.png)
-![Servicios objetivo confirmados como deshabilitados](screenshots/18-servicios-deshabilitados-final.png)
+![BitLocker fully encrypted and active](screenshots/17-bitlocker-final-encriptado.png)
 
-## Resultados
+![Target services confirmed disabled](screenshots/18-servicios-deshabilitados-final.png)
 
-| Vector de ataque | Estado inicial | Estado final | Medida aplicada |
+## Results
+
+| Attack Vector | Initial State | Final State | Applied Measure |
 |---|---|---|---|
-| Cifrado de disco | Desactivado | Activo (AES-256) | Configuración de BitLocker con PIN |
-| Puerto 445 (SMB) | Abierto | Filtrado/Cerrado | Desactivación de SMBv1 y servicios |
-| Telemetría | Completa | Nivel 0 (Mínimo) | Modificación de llaves de registro |
-| Resolución de nombres | Activa (LLMNR) | Desactivada | Hardening de DNS Client y NetBIOS |
+| Disk Encryption | Disabled | Active (AES-256) | BitLocker configuration with PIN |
+| Port 445 (SMB) | Open | Filtered/Closed | Disabling SMBv1 and associated services |
+| Telemetry | Full | Level 0 (Minimum) | Registry key modification |
+| Name Resolution | Active (LLMNR) | Disabled | DNS Client and NetBIOS hardening |
 
-El escaneo Nmap final mostró una reducción drástica de puertos expuestos frente al estado inicial, confirmando la efectividad de las medidas aplicadas.
+The final Nmap scan demonstrated a drastic reduction in exposed ports compared to the initial baseline, confirming the effectiveness of the security controls applied.
 
-## Aprendizaje
-- El hardening efectivo combina tres capas independientes (cifrado, superficie de red, privacidad) que se refuerzan entre sí.
-- El principio de mínima funcionalidad (deshabilitar todo lo no esencial, como servicios de Xbox en una estación de trabajo) reduce superficie de ataque sin afectar la operación real del sistema.
-- Automatizar el proceso en un script no es solo comodidad: garantiza consistencia y auditar/repetir el hardening en múltiples equipos sin errores manuales.
-- Los protectores de BitLocker (TPM+PIN) y su clave de recuperación deben gestionarse con el mismo cuidado que cualquier credencial crítica — nunca deben quedar expuestos en documentación pública.
+## Key Takeaways
+- Effective hardening combines three independent layers (encryption, network surface, privacy) that reinforce each other.
+- The principle of least functionality (disabling all non-essential features, such as Xbox services on a workstation) reduces the attack surface without impacting operations.
+- Automating the process into a script ensures consistency and enables reliable execution across multiple systems without manual mistakes.
+- BitLocker protectors (TPM+PIN) and recovery keys must be managed with the same level of care as any critical credential — they should never be exposed in public documentation.
