@@ -1,19 +1,19 @@
 # Virtual Experience Programs – Forage
 
-## Contexto
-Participación en programas virtuales de experiencia profesional
-con enfoque en ciberseguridad y análisis de riesgos.
+## Context
+Participation in virtual professional experience programs 
+focused on cybersecurity and risk analysis.
 
-## Programas
+## Programs
 - Mastercard – Cybersecurity
 - Datacom – Cybersecurity
 - PwC – Cybersecurity
 
-## Actividades
-- Análisis de incidentes
-- Evaluación de riesgos
-- Tareas de concientización y respuesta
+## Activities
+- Incident analysis
+- Risk assessment
+- Awareness and incident response tasks
 
-## Aprendizaje
-Comprensión de roles profesionales, flujos de trabajo y
-comunicación en entornos corporativos.
+## Key Takeaways
+Understanding of professional roles, workflows, and 
+communication within corporate environments.
