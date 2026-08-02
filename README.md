@@ -1,29 +1,29 @@
 # 🛡️ Cybersecurity & Defensive Security Portfolio
 
-¡Hola! 👋 Bienvenido/a a mi repositorio principal de laboratorios y proyectos. 
+Hi there! 👋 Welcome to my main repository for labs and projects.
 
-Soy estudiante de **Ingeniería en Ciberseguridad** con formación previa en **Investigación Criminal**. Me apasiona entender cómo funcionan los ataques a bajo nivel para diseñar mejores defensas, analizar telemetría y evaluar controles de tecnología.
+I am a **Cybersecurity Engineering** student with a background in **Criminal Investigation**. I am passionate about understanding low-level attack mechanics to design better defenses, analyze telemetry, and evaluate technology controls.
 
-Este espacio reúne análisis prácticos, desarrollo de herramientas y laboratorios desarrollados en entornos controlados y aislados.
+This space brings together hands-on analysis, tool development, and labs built within controlled, isolated environments.
 
 ---
 
-## 🔬 Áreas de Enfoque y Laboratorios
+## 🔬 Focus Areas & Labs
 
-| Área | Descripción & Enfoque |
+| Area | Description & Focus |
 | :--- | :--- |
-| 🛡️ **Blue Team & EDR** | Detección de amenazas, análisis de memoria/procesos y desarrollo de contramedidas defensivas. |
-| 🕵️‍♂️ **OSINT & Recon** | Investigación en fuentes abiertas, mapeo de infraestructura y recolección de inteligencia de amenazas. |
-| 🧩 **Ingeniería Inversa** | Análisis estático y dinámico de código, inspección de *drivers* y estructuras de kernel (IDA Pro, WinDbg). |
-| 📋 **Auditoría & ITGC** | Evaluación de controles generales de TI, gestión de accesos y cumplimiento de políticas de seguridad. |
+| 🛡️ **Blue Team & EDR** | Threat detection, memory/process analysis, and defensive countermeasure development. |
+| 🕵️‍♂️ **OSINT & Recon** | Open-source intelligence gathering, infrastructure mapping, and threat intelligence collection. |
+| 🧩 **Reverse Engineering** | Static and dynamic code analysis, driver inspection, and kernel structures (IDA Pro, WinDbg). |
+| 📋 **Auditing & ITGC** | Information Technology General Controls (ITGC) evaluation, access management, and security policy compliance. |
 
-## ⚙️ Entornos & Tecnologías
+## ⚙️ Environments & Technologies
 
-* **Sistemas Operativos:** Windows Server, Windows 10/11 (Kernel/Userland), Linux (Debian/Ubuntu).
-* **Análisis & Forense:** IDA Pro, WinDbg, Sysmon, Process Monitor, Wireshark.
-* **Lógica & Scripting:** Python, PowerShell, Bash.
+* **Operating Systems:** Windows Server, Windows 10/11 (Kernel/Userland), Linux (Debian/Ubuntu).
+* **Analysis & Forensics:** IDA Pro, WinDbg, Sysmon, Process Monitor, Wireshark.
+* **Logic & Scripting:** Python, PowerShell, Bash.
 
 ---
 
-⚠️ **Aviso de Ética y Responsabilidad:**  
-*Todo el contenido, investigaciones y código en este repositorio han sido desarrollados exclusivamente con fines educativos, de investigación defensiva y dentro de entornos de prueba aislados. No me responsabilizo por el uso indebido del material expuesto.*
+⚠️ **Ethics & Responsibility Disclaimer:**  
+*All content, research, and code in this repository have been developed exclusively for educational and defensive research purposes within isolated test environments. I am not responsible for any misuse of the material provided here.*
