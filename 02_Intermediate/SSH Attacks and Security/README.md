@@ -2,7 +2,7 @@
 
 Laboratorio de ciberseguridad ofensiva/defensiva: se endureció un servidor SSH (Ubuntu Server) siguiendo buenas prácticas de la industria y luego se validó esa configuración lanzando ataques de fuerza bruta controlados desde una máquina Kali Linux, comparando el comportamiento del servidor **antes** y **después** del hardening.
 
-> Proyecto realizado como parte de la Licenciatura en Ciberseguridad, asignatura *Gestión de Almacenamiento de Información* (Laboratorio No. 5). Todo el trabajo se ejecutó en un laboratorio virtual aislado (red NAT privada), sin tocar sistemas de terceros.
+> Proyecto realizado como parte de la Licenciatura en Ciberseguridad, asignatura *Ciberseguridad IV* (Laboratorio No. 5). Todo el trabajo se ejecutó en un laboratorio virtual aislado (red NAT privada), sin tocar sistemas de terceros.
 
 ---
 
