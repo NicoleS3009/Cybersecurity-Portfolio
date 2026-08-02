@@ -1,12 +1,13 @@
-# Laboratory Guide: Setting Up an OpenVPN Server
+# Lab Guide: Setting Up an OpenVPN Server
 
-**Cryptography · Laboratory Guide**
+**Cryptography · Lab Guide**
 
 Technological University of Panama · Faculty of Computer Systems Engineering
 
+
 ## 📌 Objective
 
-To set up an **OpenVPN** server on Ubuntu Server, generating its own Public Key Infrastructure (PKI) with **EasyRSA**, configuring the service, issuing a client certificate, and validating the end-to-end VPN connection.
+Set up an **OpenVPN** server on Ubuntu Server, generating its own Public Key Infrastructure (PKI) with **EasyRSA**, configuring the service, issuing a client certificate, and validating the end-to-end VPN connection.
 
 ---
 
@@ -17,15 +18,27 @@ To set up an **OpenVPN** server on Ubuntu Server, generating its own Public Key 
 ```bash
 sudo whoami
 # root
-
 ```
+
+<p align="center">
+  <img src="screenshots/01_acceso_root_whoami.png" width="600" alt="Verifying root privileges with sudo whoami">
+</p>
 
 ### Package update
 
 ```bash
 sudo apt update && sudo apt upgrade -y
-
 ```
+
+<p align="center">
+  <img src="screenshots/02_actualizando_paquetes.png" width="650" alt="System package update in progress">
+</p>
+<p align="center"><em>Update in progress...</em></p>
+
+<p align="center">
+  <img src="screenshots/03_paquetes_actualizados.png" width="650" alt="Packages updated successfully">
+</p>
+<p align="center"><em>Packages updated successfully, no critical services pending restart.</em></p>
 
 ---
 
@@ -33,77 +46,117 @@ sudo apt update && sudo apt upgrade -y
 
 ```bash
 sudo apt install openvpn easy-rsa -y
-
 ```
+
+<p align="center">
+  <img src="screenshots/04_instalando_openvpn.png" width="650" alt="Installing openvpn and easy-rsa">
+</p>
+
+<p align="center">
+  <img src="screenshots/05_instalando_openvpn_unpack.png" width="650" alt="Unpacking openvpn and easy-rsa">
+</p>
+<p align="center"><em>Packages <code>openvpn</code>, <code>easy-rsa</code>, and dependencies installed successfully.</em></p>
 
 ---
 
-## 🔐 3. Creating the Public Key Infrastructure (PKI) with EasyRSA
+## 🔐 3. Building the Public Key Infrastructure (PKI) with EasyRSA
 
 ### Working directory
 
 ```bash
 make-cadir ~/openvpn-ca
 cd ~/openvpn-ca
-
 ```
+
+<p align="center">
+  <img src="screenshots/06_creando_directorio_easyrsa.png" width="600" alt="Creating the openvpn-ca directory">
+</p>
 
 ### Initialize PKI
 
 ```bash
 sudo ./easyrsa init-pki
-
 ```
+
+<p align="center">
+  <img src="screenshots/07_inicializando_pki.png" width="600" alt="Initializing the PKI">
+</p>
 
 ### Build the Certificate Authority (CA)
 
 ```bash
 sudo ./easyrsa build-ca
-
 ```
 
 Common Name used: `openvpn-ca`
+
+<p align="center">
+  <img src="screenshots/08_construyendo_ca.png" width="600" alt="Building the CA with easyrsa build-ca">
+</p>
 
 ### Server certificate
 
 ```bash
 sudo ./easyrsa sign-req server server
-
 ```
+
+<p align="center">
+  <img src="screenshots/09_certificado_servidor.png" width="650" alt="Signing the server certificate, valid for 825 days">
+</p>
+<p align="center"><em>Server certificate signed and valid for 825 days.</em></p>
 
 ### Diffie-Hellman parameters
 
 ```bash
 sudo ./easyrsa gen-dh
-
 ```
+
+<p align="center">
+  <img src="screenshots/10_diffie_hellman_1.png" width="650" alt="Generating Diffie-Hellman parameters - progress">
+</p>
+<p align="center"><img src="screenshots/11_diffie_hellman_2.png" width="650" alt="Generating Diffie-Hellman parameters - result"></p>
+<p align="center"><em>2048-bit DH parameters generated in <code>pki/dh.pem</code>.</em></p>
 
 ### HMAC key (ta.key) — additional security layer
 
 ```bash
 openvpn --genkey secret ta.key
-
 ```
 
-### Copy necessary files to /etc/openvpn/
+<p align="center">
+  <img src="screenshots/12_generando_hmac.png" width="600" alt="Generating the ta.key HMAC key">
+</p>
+
+### Copying required files to /etc/openvpn/
 
 ```bash
 sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem ta.key /etc/openvpn/
-
 ```
+
+<p align="center">
+  <img src="screenshots/13_copiando_archivos.png" width="600" alt="Copying certificates and keys to /etc/openvpn">
+</p>
 
 ### File verification
 
 ```bash
 ls -l /etc/openvpn/
-
 ```
+
+<p align="center">
+  <img src="screenshots/14_verificacion_archivos.png" width="500" alt="Verifying files copied to /etc/openvpn">
+</p>
+<p align="center"><em><code>ca.crt</code>, <code>dh.pem</code>, <code>server.crt</code>, <code>server.key</code>, <code>ta.key</code> present.</em></p>
 
 ---
 
 ## ⚙️ 4. OpenVPN Server Configuration
 
 ### `/etc/openvpn/server.conf` file
+
+<p align="center">
+  <img src="screenshots/15_server_conf.png" width="450" alt="Contents of the server.conf file">
+</p>
 
 ```
 port 1194
@@ -126,50 +179,72 @@ status openvpn-status.log
 verb 3
 user nobody
 group nogroup
-
 ```
 
-### Enable IP forwarding
+### Enabling IP forwarding
 
-Uncomment `net.ipv4.ip_forward=1` in `/etc/sysctl.conf`:
+`net.ipv4.ip_forward=1` is uncommented in `/etc/sysctl.conf`:
+
+<p align="center">
+  <img src="screenshots/16_habilitando_reenvio_ip.png" width="650" alt="Uncommenting net.ipv4.ip_forward in sysctl.conf">
+</p>
 
 ```bash
 sudo sysctl -p
-
 ```
 
-### Start and enable the service
+<p align="center">
+  <img src="screenshots/17_aplicando_cambios_sysctl.png" width="600" alt="Applying sysctl changes">
+</p>
+
+### Starting and enabling the service
 
 ```bash
 sudo systemctl start openvpn@server
 sudo systemctl enable openvpn@server
-
 ```
 
-### Verify service status
+<p align="center">
+  <img src="screenshots/18_iniciar_servicio_start.png" width="600" alt="Starting the openvpn@server service">
+</p>
+<p align="center">
+  <img src="screenshots/19_iniciar_servicio_enable.png" width="600" alt="Enabling the openvpn@server service at boot">
+</p>
+
+### Checking service status
 
 ```bash
 sudo systemctl status openvpn@server.service
-
 ```
+
+<p align="center">
+  <img src="screenshots/20_verificando_status.png" width="650" alt="active (running) status of the OpenVPN service">
+</p>
+<p align="center"><em>Service <strong>active (running)</strong>: <code>tun0</code> tunnel with IP 10.8.0.1, "Initialization Sequence Completed".</em></p>
 
 ---
 
 ## 👤 5. Client Certificate
 
-### Generate certificate request (without passphrase)
+### Generate certificate request (no passphrase)
 
 ```bash
 sudo ./easyrsa gen-req client1 nopass
-
 ```
+
+<p align="center">
+  <img src="screenshots/21_creando_cert_cliente.png" width="650" alt="Generating the certificate request for client1">
+</p>
 
 ### Sign the client certificate
 
 ```bash
 sudo ./easyrsa sign-req client client1
-
 ```
+
+<p align="center">
+  <img src="screenshots/22_sign_req_client.png" width="650" alt="Signing the client1 certificate, valid 825 days">
+</p>
 
 ### Copy files to the client
 
@@ -179,12 +254,19 @@ sudo cp /etc/openvpn/ca.crt client-files/
 sudo cp /etc/openvpn/ta.key client-files/
 sudo cp openvpn-ca/pki/issued/client1.crt client-files/
 sudo cp openvpn-ca/pki/private/client1.key client-files/
-
 ```
+
+<p align="center">
+  <img src="screenshots/23_copiando_al_cliente.png" width="650" alt="Copying certificate files to the client">
+</p>
 
 ---
 
 ## 📄 6. Client Configuration File (`client1.ovpn`)
+
+<p align="center">
+  <img src="screenshots/24_archivo_cliente_ovpn.png" width="550" alt="Contents of the client's .ovpn file with embedded certificates">
+</p>
 
 ```
 client
@@ -203,10 +285,9 @@ key-direction 1
 <cert> ... </cert>
 <key> ... </key>
 <tls-auth> ... </tls-auth>
-
 ```
 
-> 📝 **Laboratory Note:** *"I had to change the cipher part because it said it was obsolete."* — The simple cipher (`cipher AES-256-CBC`) was replaced by `data-ciphers` with a fallback, as recent OpenVPN clients flag `cipher` as a deprecated directive.
+> 📝 **Lab note:** *"I had to change the cipher part because it was telling me it was obsolete."* — The simple cipher directive (`cipher AES-256-CBC`) was replaced with `data-ciphers` plus a fallback, since recent OpenVPN clients flag `cipher` as a deprecated directive.
 
 ---
 
@@ -214,16 +295,34 @@ key-direction 1
 
 ### OpenVPN GUI Client (Windows)
 
+<p align="center">
+  <img src="screenshots/25_prueba_conexion_gui.png" width="500" alt="OpenVPN GUI client connected, assigned IP 10.8.0.2">
+</p>
+<p align="center"><em>Status: <strong>Connected</strong> · Assigned IP: <code>10.8.0.2</code>.</em></p>
+
 ### Verification from the server (host machine)
+
+<p align="center">
+  <img src="screenshots/26_acceso_root_cliente_host.png" width="650" alt="System access and status on the host/server machine">
+</p>
 
 ### Connectivity test (ping through the tunnel)
 
 ```bash
 ping 10.8.0.1
-
 ```
 
-### Test on an alternative port (5000)
+<p align="center">
+  <img src="screenshots/27_conectividad_ping.png" width="650" alt="Successful ping to 10.8.0.1 through the tun0 tunnel">
+</p>
+<p align="center"><em><code>tun0</code> interface active (10.8.0.1/24) — successful ICMP response in ~0.03–0.05 ms.</em></p>
+
+### Test on an alternate port (5000)
+
+<p align="center">
+  <img src="screenshots/28_otro_puerto_5000.png" width="500" alt="Successful OpenVPN connection using port 5000">
+</p>
+<p align="center"><em>Successful connection after reconfiguring server/client to port <code>5000</code>, IP <code>10.8.0.2</code> assigned again.</em></p>
 
 ---
 
@@ -239,5 +338,4 @@ Ubuntu Server (root)
    ↓ easyrsa: gen-req client1 → sign-req client client1
    ↓ client1.ovpn (embedded certs, updated cipher)
    ↓ Connection from OpenVPN GUI → IP 10.8.0.2 assigned, ping OK
-
 ```
