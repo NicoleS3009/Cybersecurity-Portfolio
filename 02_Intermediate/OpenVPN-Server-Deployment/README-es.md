@@ -1,19 +1,19 @@
-# Lab Guide: Setting Up an OpenVPN Server
+# Guía de Laboratorio: Montaje de un Servidor OpenVPN
 
-**Cryptography · Lab Guide**
+**Criptografía · Guía de Laboratorio**
 
-Technological University of Panama · Faculty of Computer Systems Engineering
+Universidad Tecnológica de Panamá · Facultad de Ingeniería de Sistemas Computacionales
 
 
-## 📌 Objective
+## 📌 Objetivo
 
-Set up an **OpenVPN** server on Ubuntu Server, generating its own Public Key Infrastructure (PKI) with **EasyRSA**, configuring the service, issuing a client certificate, and validating the end-to-end VPN connection.
+Montar un servidor **OpenVPN** sobre Ubuntu Server, generando su propia infraestructura de llaves (PKI) con **EasyRSA**, configurando el servicio, emitiendo un certificado de cliente y validando la conexión VPN de extremo a extremo.
 
 ---
 
-## 🖥️ 1. Server Preparation
+## 🖥️ 1. Preparación del servidor
 
-### Root access / privileges
+### Acceso root / privilegios
 
 ```bash
 sudo whoami
@@ -21,47 +21,47 @@ sudo whoami
 ```
 
 <p align="center">
-  <img src="screenshots/01_acceso_root_whoami.png" width="600" alt="Verifying root privileges with sudo whoami">
+  <img src="screenshots/01_acceso_root_whoami.png" width="600" alt="Verificación de privilegios root con sudo whoami">
 </p>
 
-### Package update
+### Actualización de paquetes
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
 <p align="center">
-  <img src="screenshots/02_actualizando_paquetes.png" width="650" alt="System package update in progress">
+  <img src="screenshots/02_actualizando_paquetes.png" width="650" alt="Actualización de paquetes del sistema">
 </p>
-<p align="center"><em>Update in progress...</em></p>
+<p align="center"><em>Actualización en progreso...</em></p>
 
 <p align="center">
-  <img src="screenshots/03_paquetes_actualizados.png" width="650" alt="Packages updated successfully">
+  <img src="screenshots/03_paquetes_actualizados.png" width="650" alt="Paquetes actualizados correctamente">
 </p>
-<p align="center"><em>Packages updated successfully, no critical services pending restart.</em></p>
+<p align="center"><em>Paquetes actualizados, sin servicios pendientes de reinicio crítico.</em></p>
 
 ---
 
-## 📦 2. Installing OpenVPN and Easy-RSA
+## 📦 2. Instalación de OpenVPN y Easy-RSA
 
 ```bash
 sudo apt install openvpn easy-rsa -y
 ```
 
 <p align="center">
-  <img src="screenshots/04_instalando_openvpn.png" width="650" alt="Installing openvpn and easy-rsa">
+  <img src="screenshots/04_instalando_openvpn.png" width="650" alt="Instalación de openvpn y easy-rsa">
 </p>
 
 <p align="center">
-  <img src="screenshots/05_instalando_openvpn_unpack.png" width="650" alt="Unpacking openvpn and easy-rsa">
+  <img src="screenshots/05_instalando_openvpn_unpack.png" width="650" alt="Desempaquetado de openvpn y easy-rsa">
 </p>
-<p align="center"><em>Packages <code>openvpn</code>, <code>easy-rsa</code>, and dependencies installed successfully.</em></p>
+<p align="center"><em>Paquetes <code>openvpn</code>, <code>easy-rsa</code> y dependencias instalados correctamente.</em></p>
 
 ---
 
-## 🔐 3. Building the Public Key Infrastructure (PKI) with EasyRSA
+## 🔐 3. Creación de la infraestructura de llaves (PKI) con EasyRSA
 
-### Working directory
+### Directorio de trabajo
 
 ```bash
 make-cadir ~/openvpn-ca
@@ -69,93 +69,93 @@ cd ~/openvpn-ca
 ```
 
 <p align="center">
-  <img src="screenshots/06_creando_directorio_easyrsa.png" width="600" alt="Creating the openvpn-ca directory">
+  <img src="screenshots/06_creando_directorio_easyrsa.png" width="600" alt="Creación del directorio openvpn-ca">
 </p>
 
-### Initialize PKI
+### Inicializar PKI
 
 ```bash
 sudo ./easyrsa init-pki
 ```
 
 <p align="center">
-  <img src="screenshots/07_inicializando_pki.png" width="600" alt="Initializing the PKI">
+  <img src="screenshots/07_inicializando_pki.png" width="600" alt="Inicialización de la PKI">
 </p>
 
-### Build the Certificate Authority (CA)
+### Construir la Autoridad Certificadora (CA)
 
 ```bash
 sudo ./easyrsa build-ca
 ```
 
-Common Name used: `openvpn-ca`
+Common Name usado: `openvpn-ca`
 
 <p align="center">
-  <img src="screenshots/08_construyendo_ca.png" width="600" alt="Building the CA with easyrsa build-ca">
+  <img src="screenshots/08_construyendo_ca.png" width="600" alt="Construcción de la CA con easyrsa build-ca">
 </p>
 
-### Server certificate
+### Certificado del servidor
 
 ```bash
 sudo ./easyrsa sign-req server server
 ```
 
 <p align="center">
-  <img src="screenshots/09_certificado_servidor.png" width="650" alt="Signing the server certificate, valid for 825 days">
+  <img src="screenshots/09_certificado_servidor.png" width="650" alt="Firma del certificado del servidor, válido por 825 días">
 </p>
-<p align="center"><em>Server certificate signed and valid for 825 days.</em></p>
+<p align="center"><em>Certificado del servidor firmado y válido por 825 días.</em></p>
 
-### Diffie-Hellman parameters
+### Parámetros Diffie-Hellman
 
 ```bash
 sudo ./easyrsa gen-dh
 ```
 
 <p align="center">
-  <img src="screenshots/10_diffie_hellman_1.png" width="650" alt="Generating Diffie-Hellman parameters - progress">
+  <img src="screenshots/10_diffie_hellman_1.png" width="650" alt="Generación de parámetros Diffie-Hellman - progreso">
 </p>
-<p align="center"><img src="screenshots/11_diffie_hellman_2.png" width="650" alt="Generating Diffie-Hellman parameters - result"></p>
-<p align="center"><em>2048-bit DH parameters generated in <code>pki/dh.pem</code>.</em></p>
+<p align="center"><img src="screenshots/11_diffie_hellman_2.png" width="650" alt="Generación de parámetros Diffie-Hellman - resultado"></p>
+<p align="center"><em>Parámetros DH de 2048 bits generados en <code>pki/dh.pem</code>.</em></p>
 
-### HMAC key (ta.key) — additional security layer
+### Clave HMAC (ta.key) — capa adicional de seguridad
 
 ```bash
 openvpn --genkey secret ta.key
 ```
 
 <p align="center">
-  <img src="screenshots/12_generando_hmac.png" width="600" alt="Generating the ta.key HMAC key">
+  <img src="screenshots/12_generando_hmac.png" width="600" alt="Generación de la clave HMAC ta.key">
 </p>
 
-### Copying required files to /etc/openvpn/
+### Copiar archivos necesarios a /etc/openvpn/
 
 ```bash
 sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem ta.key /etc/openvpn/
 ```
 
 <p align="center">
-  <img src="screenshots/13_copiando_archivos.png" width="600" alt="Copying certificates and keys to /etc/openvpn">
+  <img src="screenshots/13_copiando_archivos.png" width="600" alt="Copia de certificados y llaves a /etc/openvpn">
 </p>
 
-### File verification
+### Verificación de archivos
 
 ```bash
 ls -l /etc/openvpn/
 ```
 
 <p align="center">
-  <img src="screenshots/14_verificacion_archivos.png" width="500" alt="Verifying files copied to /etc/openvpn">
+  <img src="screenshots/14_verificacion_archivos.png" width="500" alt="Verificación de archivos copiados en /etc/openvpn">
 </p>
-<p align="center"><em><code>ca.crt</code>, <code>dh.pem</code>, <code>server.crt</code>, <code>server.key</code>, <code>ta.key</code> present.</em></p>
+<p align="center"><em><code>ca.crt</code>, <code>dh.pem</code>, <code>server.crt</code>, <code>server.key</code>, <code>ta.key</code> presentes.</em></p>
 
 ---
 
-## ⚙️ 4. OpenVPN Server Configuration
+## ⚙️ 4. Configuración del servidor OpenVPN
 
-### `/etc/openvpn/server.conf` file
+### Archivo `/etc/openvpn/server.conf`
 
 <p align="center">
-  <img src="screenshots/15_server_conf.png" width="450" alt="Contents of the server.conf file">
+  <img src="screenshots/15_server_conf.png" width="450" alt="Contenido del archivo server.conf">
 </p>
 
 ```
@@ -181,12 +181,12 @@ user nobody
 group nogroup
 ```
 
-### Enabling IP forwarding
+### Habilitar reenvío de IP (IP forwarding)
 
-`net.ipv4.ip_forward=1` is uncommented in `/etc/sysctl.conf`:
+Se descomenta `net.ipv4.ip_forward=1` en `/etc/sysctl.conf`:
 
 <p align="center">
-  <img src="screenshots/16_habilitando_reenvio_ip.png" width="650" alt="Uncommenting net.ipv4.ip_forward in sysctl.conf">
+  <img src="screenshots/16_habilitando_reenvio_ip.png" width="650" alt="Descomentando net.ipv4.ip_forward en sysctl.conf">
 </p>
 
 ```bash
@@ -194,10 +194,10 @@ sudo sysctl -p
 ```
 
 <p align="center">
-  <img src="screenshots/17_aplicando_cambios_sysctl.png" width="600" alt="Applying sysctl changes">
+  <img src="screenshots/17_aplicando_cambios_sysctl.png" width="600" alt="Aplicando cambios de sysctl">
 </p>
 
-### Starting and enabling the service
+### Iniciar y habilitar el servicio
 
 ```bash
 sudo systemctl start openvpn@server
@@ -205,48 +205,48 @@ sudo systemctl enable openvpn@server
 ```
 
 <p align="center">
-  <img src="screenshots/18_iniciar_servicio_start.png" width="600" alt="Starting the openvpn@server service">
+  <img src="screenshots/18_iniciar_servicio_start.png" width="600" alt="Inicio del servicio openvpn@server">
 </p>
 <p align="center">
-  <img src="screenshots/19_iniciar_servicio_enable.png" width="600" alt="Enabling the openvpn@server service at boot">
+  <img src="screenshots/19_iniciar_servicio_enable.png" width="600" alt="Habilitación del servicio openvpn@server al arranque">
 </p>
 
-### Checking service status
+### Verificar estado del servicio
 
 ```bash
 sudo systemctl status openvpn@server.service
 ```
 
 <p align="center">
-  <img src="screenshots/20_verificando_status.png" width="650" alt="active (running) status of the OpenVPN service">
+  <img src="screenshots/20_verificando_status.png" width="650" alt="Estado active (running) del servicio OpenVPN">
 </p>
-<p align="center"><em>Service <strong>active (running)</strong>: <code>tun0</code> tunnel with IP 10.8.0.1, "Initialization Sequence Completed".</em></p>
+<p align="center"><em>Servicio <strong>active (running)</strong>: túnel <code>tun0</code> con IP 10.8.0.1, "Initialization Sequence Completed".</em></p>
 
 ---
 
-## 👤 5. Client Certificate
+## 👤 5. Certificado de cliente
 
-### Generate certificate request (no passphrase)
+### Generar solicitud de certificado (sin passphrase)
 
 ```bash
 sudo ./easyrsa gen-req client1 nopass
 ```
 
 <p align="center">
-  <img src="screenshots/21_creando_cert_cliente.png" width="650" alt="Generating the certificate request for client1">
+  <img src="screenshots/21_creando_cert_cliente.png" width="650" alt="Generación de la solicitud de certificado para client1">
 </p>
 
-### Sign the client certificate
+### Firmar el certificado del cliente
 
 ```bash
 sudo ./easyrsa sign-req client client1
 ```
 
 <p align="center">
-  <img src="screenshots/22_sign_req_client.png" width="650" alt="Signing the client1 certificate, valid 825 days">
+  <img src="screenshots/22_sign_req_client.png" width="650" alt="Firma del certificado de cliente client1, válido 825 días">
 </p>
 
-### Copy files to the client
+### Copiar archivos al cliente
 
 ```bash
 mkdir client-files
@@ -257,15 +257,15 @@ sudo cp openvpn-ca/pki/private/client1.key client-files/
 ```
 
 <p align="center">
-  <img src="screenshots/23_copiando_al_cliente.png" width="650" alt="Copying certificate files to the client">
+  <img src="screenshots/23_copiando_al_cliente.png" width="650" alt="Copiando archivos de certificado al cliente">
 </p>
 
 ---
 
-## 📄 6. Client Configuration File (`client1.ovpn`)
+## 📄 6. Archivo de configuración del cliente (`client1.ovpn`)
 
 <p align="center">
-  <img src="screenshots/24_archivo_cliente_ovpn.png" width="550" alt="Contents of the client's .ovpn file with embedded certificates">
+  <img src="screenshots/24_archivo_cliente_ovpn.png" width="550" alt="Contenido del archivo .ovpn del cliente con certificados embebidos">
 </p>
 
 ```
@@ -287,55 +287,57 @@ key-direction 1
 <tls-auth> ... </tls-auth>
 ```
 
-> 📝 **Lab note:** *"I had to change the cipher part because it was telling me it was obsolete."* — The simple cipher directive (`cipher AES-256-CBC`) was replaced with `data-ciphers` plus a fallback, since recent OpenVPN clients flag `cipher` as a deprecated directive.
+> 📝 **Nota del laboratorio:** *"Le tuve que cambiar la parte del cipher porque me decía que era obsoleto."* — Se reemplazó el cifrador simple (`cipher AES-256-CBC`) por `data-ciphers` con fallback, ya que los clientes OpenVPN recientes marcan `cipher` como una directiva en desuso.
 
 ---
 
-## ✅ 7. Connection Test
+## ✅ 7. Prueba de conexión
 
-### OpenVPN GUI Client (Windows)
-
-<p align="center">
-  <img src="screenshots/25_prueba_conexion_gui.png" width="500" alt="OpenVPN GUI client connected, assigned IP 10.8.0.2">
-</p>
-<p align="center"><em>Status: <strong>Connected</strong> · Assigned IP: <code>10.8.0.2</code>.</em></p>
-
-### Verification from the server (host machine)
+### Cliente OpenVPN GUI (Windows)
 
 <p align="center">
-  <img src="screenshots/26_acceso_root_cliente_host.png" width="650" alt="System access and status on the host/server machine">
+  <img src="screenshots/25_prueba_conexion_gui.png" width="500" alt="Cliente OpenVPN GUI conectado, IP asignada 10.8.0.2">
+</p>
+<p align="center"><em>Estado: <strong>Conectado</strong> · IP asignada: <code>10.8.0.2</code>.</em></p>
+
+### Verificación desde el servidor (máquina host)
+
+<p align="center">
+  <img src="screenshots/26_acceso_root_cliente_host.png" width="650" alt="Acceso y estado del sistema en la máquina host/servidor">
 </p>
 
-### Connectivity test (ping through the tunnel)
+### Prueba de conectividad (ping por el túnel)
 
 ```bash
 ping 10.8.0.1
 ```
 
 <p align="center">
-  <img src="screenshots/27_conectividad_ping.png" width="650" alt="Successful ping to 10.8.0.1 through the tun0 tunnel">
+  <img src="screenshots/27_conectividad_ping.png" width="650" alt="Ping exitoso a 10.8.0.1 a través del túnel tun0">
 </p>
-<p align="center"><em><code>tun0</code> interface active (10.8.0.1/24) — successful ICMP response in ~0.03–0.05 ms.</em></p>
+<p align="center"><em>Interfaz <code>tun0</code> activa (10.8.0.1/24) — respuesta ICMP exitosa en ~0.03–0.05 ms.</em></p>
 
-### Test on an alternate port (5000)
+### Prueba en un puerto alternativo (5000)
 
 <p align="center">
-  <img src="screenshots/28_otro_puerto_5000.png" width="500" alt="Successful OpenVPN connection using port 5000">
+  <img src="screenshots/28_otro_puerto_5000.png" width="500" alt="Conexión OpenVPN exitosa usando el puerto 5000">
 </p>
-<p align="center"><em>Successful connection after reconfiguring server/client to port <code>5000</code>, IP <code>10.8.0.2</code> assigned again.</em></p>
+<p align="center"><em>Conexión exitosa reconfigurando el servidor/cliente al puerto <code>5000</code>, IP asignada nuevamente <code>10.8.0.2</code>.</em></p>
 
 ---
 
-## 🧩 Flow Summary
+## 🧩 Resumen del flujo
 
 ```
 Ubuntu Server (root)
    ↓ apt install openvpn easy-rsa
    ↓ easyrsa: init-pki → build-ca → sign-req server → gen-dh → genkey ta.key
    ↓ cp certs/keys → /etc/openvpn/
-   ↓ server.conf (port 1194/UDP, subnet 10.8.0.0/24, AES-256)
+   ↓ server.conf (puerto 1194/UDP, subred 10.8.0.0/24, AES-256)
    ↓ ip_forward=1 + systemctl start/enable openvpn@server
    ↓ easyrsa: gen-req client1 → sign-req client client1
-   ↓ client1.ovpn (embedded certs, updated cipher)
-   ↓ Connection from OpenVPN GUI → IP 10.8.0.2 assigned, ping OK
+   ↓ client1.ovpn (certs embebidos, cipher actualizado)
+   ↓ Conexión desde OpenVPN GUI → IP 10.8.0.2 asignada, ping OK
+```
+
 ```
