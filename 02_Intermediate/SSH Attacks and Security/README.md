@@ -141,17 +141,6 @@ Se repitió exactamente el mismo ataque Hydra contra el servidor ya endurecido.
 
 `OpenSSH` · `Fail2Ban` · `ssh-keygen` (Ed25519) · `Hydra` · `Medusa` · `nc` · `iptables` · `Kali Linux` · `Ubuntu Server`
 
-## 📁 Estructura del repositorio
-
-```
-.
-├── README.md
-├── screenshots/          # Evidencia visual del laboratorio
-└── extracted-text.md     # Texto crudo extraído del informe original (referencia)
-```
-
----
-
 ## ⚖️ Nota ética
 
 Todos los ataques se realizaron en un entorno de laboratorio propio, completamente aislado (red NAT privada), contra una máquina virtual creada específicamente para este ejercicio académico. Ningún sistema de terceros fue escaneado ni atacado. Este proyecto tiene fines exclusivamente educativos y de práctica defensiva.
