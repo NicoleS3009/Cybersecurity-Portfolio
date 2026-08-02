@@ -1,75 +1,75 @@
-# Self-Signed-TLS-with-OpenSSL
+# Self-Signed TLS with OpenSSL
 
-## Contexto
-Laboratorio académico enfocado en la comprensión del proceso de creación y configuración de certificados TLS mediante OpenSSL.
+## Context
+Academic laboratory focused on understanding the process of creating and configuring TLS certificates using OpenSSL.
 
-## Objetivo
-Implementar comunicación cifrada en un servidor web utilizando un certificado autofirmado.
+## Objective
+Implement encrypted communication on a web server using a self-signed certificate.
 
-## Tecnologías
+## Technologies
 - OpenSSL
 - Apache / Nginx
 - TLS
 
-## Implementación
+## Implementation
 
-### Generación de clave privada y certificado autofirmado
-Se generó un certificado autofirmado con SAN (Subject Alternative Name) usando OpenSSL directamente, incluyendo `example.local` y `127.0.0.1` como nombres alternativos.
+### Generation of Private Key and Self-Signed Certificate
+A self-signed certificate with SAN (Subject Alternative Name) was generated directly using OpenSSL, including `example.local` and `127.0.0.1` as alternative names.
 
-![Generación del certificado autofirmado con OpenSSL](screenshots/01-generar-certificado.png)
+![Generation of self-signed certificate with OpenSSL](screenshots/01-generar-certificado.png)
 
-### Configuración del servidor web para TLS
+### Web Server Configuration for TLS
 
 **Apache**
 
-Instalación del módulo SSL y habilitación:
+Installation and enablement of the SSL module:
 
-![Instalación de Apache y módulo SSL](screenshots/02-instalar-apache-ssl.png)
-![Módulo SSL habilitado en Apache](screenshots/03-apache-ssl-habilitado.png)
+![Apache installation and SSL module](screenshots/02-instalar-apache-ssl.png)
+![SSL module enabled in Apache](screenshots/03-apache-ssl-habilitado.png)
 
-Creación del VirtualHost HTTPS apuntando al certificado generado:
+Creation of the HTTPS VirtualHost pointing to the generated certificate:
 
-![VirtualHost HTTPS en Apache](screenshots/04-virtualhost-apache-conf.png)
+![HTTPS VirtualHost in Apache](screenshots/04-virtualhost-apache-conf.png)
 
-Habilitación del sitio y recarga del servicio:
+Site enablement and service reload:
 
-![Sitio SSL habilitado en Apache](screenshots/05-habilitar-sitio-apache.png)
+![SSL site enabled in Apache](screenshots/05-habilitar-sitio-apache.png)
 
 **Nginx**
 
-Instalación de Nginx:
+Installation of Nginx:
 
-![Instalación de Nginx](screenshots/06-instalar-nginx.png)
-![Nginx instalado correctamente](screenshots/07-nginx-instalado.png)
+![Nginx installation](screenshots/06-instalar-nginx.png)
+![Nginx installed successfully](screenshots/07-nginx-instalado.png)
 
-Creación del bloque de servidor HTTPS:
+Creation of the HTTPS server block:
 
-![Server block HTTPS en Nginx](screenshots/08-server-block-nginx-conf.png)
+![HTTPS server block in Nginx](screenshots/08-server-block-nginx-conf.png)
 
-Activación del sitio y recarga del servicio:
+Site activation and service reload:
 
-![Sitio activado en Nginx](screenshots/09-activar-sitio-nginx.png)
+![Site activated in Nginx](screenshots/09-activar-sitio-nginx.png)
 
-## Pruebas
-Se verificó el cifrado TLS y el comportamiento del navegador ante certificados no confiables.
+## Testing
+TLS encryption and browser behavior regarding untrusted certificates were verified.
 
-Prueba con `curl` (ignorando la validación del certificado por ser autofirmado):
+Test with `curl` (ignoring certificate validation due to being self-signed):
 
-![Prueba de conexión TLS con curl](screenshots/10-curl-prueba-tls.png)
+![TLS connection test with curl](screenshots/10-curl-prueba-tls.png)
 
-Verificación de los detalles del certificado (subject, issuer, fechas de validez, SAN) con `openssl s_client`:
+Verification of certificate details (subject, issuer, validity dates, SAN) with `openssl s_client`:
 
-![Detalles del certificado vía openssl s_client](screenshots/11-openssl-s-client-prueba.png)
+![Certificate details via openssl s_client](screenshots/11-openssl-s-client-prueba.png)
 
-## Opcional: Autoridad Certificadora (CA) propia
+## Optional: Custom Certificate Authority (CA)
 
-Como ejercicio adicional, se creó una CA local y se firmó el certificado del servidor con ella en lugar de usar un certificado autofirmado directo, agregando extensiones SAN mediante un archivo de configuración.
+As an additional exercise, a local CA was created and the server certificate was signed with it instead of using a direct self-signed certificate, adding SAN extensions via a configuration file.
 
-![Creación de la CA local y el CSR del servidor](screenshots/12-crear-ca-y-csr.png)
-![Archivo de extensiones SAN](screenshots/13-extensiones-san.png)
-![Firma del certificado del servidor con la CA local](screenshots/14-firmar-certificado.png)
+![Creation of local CA and server CSR](screenshots/12-crear-ca-y-csr.png)
+![SAN extensions file](screenshots/13-extensiones-san.png)
+![Signing server certificate with local CA](screenshots/14-firmar-certificado.png)
 
-> **Nota:** al crear el archivo de extensiones con `sudo cat > archivo`, se obtuvo un error de permiso denegado (el redireccionamiento `>` se ejecuta con los permisos del shell actual, no con los de `sudo`). La solución fue usar `sudo tee archivo`, que sí escribe el contenido con privilegios de root sin que falle el redireccionamiento.
+> **Note:** when creating the extensions file with `sudo cat > file`, a permission denied error was encountered (the `>` redirection executes with current shell permissions, not `sudo`). The solution was using `sudo tee file`, which writes the content with root privileges without failing redirection.
 
-## Aprendizaje
-Comprensión del flujo de certificados, confianza TLS y advertencias de seguridad.
+## Key Takeaways
+Understanding certificate workflow, TLS trust models, and security warnings.
