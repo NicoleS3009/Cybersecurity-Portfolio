@@ -1,146 +1,131 @@
-# 🔒 Hardening y Auditoría de Seguridad SSH
+# 🔒 SSH Hardening and Security Audit
 
-Laboratorio de ciberseguridad ofensiva/defensiva: se endureció un servidor SSH (Ubuntu Server) siguiendo buenas prácticas de la industria y luego se validó esa configuración lanzando ataques de fuerza bruta controlados desde una máquina Kali Linux, comparando el comportamiento del servidor **antes** y **después** del hardening.
+Offensive/Defensive cybersecurity laboratory: an SSH server (Ubuntu Server) was hardened following industry best practices and subsequently validated by launching controlled brute-force attacks from a Kali Linux machine, comparing the server's behavior **before** and **after** hardening.
 
-> Proyecto realizado como parte de la Licenciatura en Ciberseguridad, asignatura *Ciberseguridad IV* (Laboratorio No. 5). Todo el trabajo se ejecutó en un laboratorio virtual aislado (red NAT privada), sin tocar sistemas de terceros.
+> Project executed as part of the Bachelor's Degree in Cybersecurity, course *Cybersecurity IV* (Laboratory No. 5). All work was conducted within an isolated virtual laboratory environment (private NAT network) without targeting third-party systems.
 
 ---
 
-## 🎯 Objetivo
+## 🎯 Objective
 
-Demostrar, de forma práctica y medible, cómo un conjunto de controles de hardening en `sshd_config` + Fail2Ban convierte un servidor SSH vulnerable a fuerza bruta en un objetivo prácticamente inmune a ese vector de ataque, y documentar la evidencia en logs.
+Demonstrate, in a practical and measurable manner, how a set of hardening controls in `sshd_config` combined with Fail2Ban transforms a brute-force vulnerable SSH server into a target virtually immune to this attack vector, while documenting log evidence.
 
-## 🗺️ Topología del laboratorio
+## 🗺️ Laboratory Topology
 
-Red privada NAT `192.168.159.0/24`, topología estrella/bus virtual.
+Private NAT network `192.168.159.0/24`, virtual bus/star topology.
 
-| Nodo | Sistema Operativo | IP | Función |
+| Node | Operating System | IP | Role |
 |---|---|---|---|
-| Atacante | Kali Linux | `192.168.159.134` | Origen de escaneos (`nc`) y fuerza bruta (`hydra`, `medusa`) |
-| Víctima | Ubuntu Server | `192.168.159.139` | Host endurecido: SSH + llaves Ed25519 + Fail2Ban |
-| Canal | Virtual Switch | N/A | Interfaz virtual (VMware/VirtualBox) entre nodos |
+| Attacker | Kali Linux | `192.168.159.134` | Source of scanning (`nc`) and brute-forcing (`hydra`, `medusa`) |
+| Victim | Ubuntu Server | `192.168.159.139` | Hardened Host: SSH + Ed25519 Keys + Fail2Ban |
+| Channel | Virtual Switch | N/A | Virtual interface (VMware/VirtualBox) connecting nodes |
 
 ---
 
-## 🛡️ Fase 1 — Hardening del servidor SSH
+## 🛡️ Phase 1 — SSH Server Hardening
 
-**Instalación y verificación de OpenSSH Server**
+**Installation and Verification of OpenSSH Server**
 
-Se instaló el paquete durante el setup de Ubuntu Server y se confirmó que el servicio estaba activo con `systemctl status ssh`.
+The package was installed during the initial Ubuntu Server setup, and service activity was confirmed via `systemctl status ssh`.
 
-![Instalación de OpenSSH Server](screenshots/01_pagina2.png)
-![Servicio ssh activo](screenshots/02_pagina2.png)
+![OpenSSH Server Installation](screenshots/01_pagina2.png)
+![Active SSH Service](screenshots/02_pagina2.png)
 
-**Directivas de seguridad aplicadas en `/etc/ssh/sshd_config`**
+**Security Directives Applied in `/etc/ssh/sshd_config`**
 
-Antes de editar se generó un respaldo (`sshd_config.bak`). Las directivas clave endurecidas:
+A backup (`sshd_config.bak`) was generated prior to editing. The key hardened directives include:
 
-| Directiva | Valor | Propósito |
+| Directive | Value | Purpose |
 |---|---|---|
-| `Port` | `2222` | Reduce escaneos automatizados al puerto estándar 22 |
-| `PermitRootLogin` | `no` | Elimina el login directo como root |
-| `MaxAuthTries` | `3` | Limita intentos de autenticación por conexión |
-| `PubkeyAuthentication` | `yes` | Habilita autenticación por llave pública |
-| `PasswordAuthentication` | `no` | Desactiva por completo el login por contraseña |
-| `ClientAliveInterval` / `ClientAliveCountMax` | `300` / `0` | Cierra sesiones inactivas |
-| `Banner` | `/etc/ssh/banner.txt` | Aviso legal antes de autenticar |
-| `AllowUsers` | `user` | Restringe qué usuarios pueden conectarse por SSH |
+| `Port` | `2222` | Reduces automated scanning targeting default port 22 |
+| `PermitRootLogin` | `no` | Prevents direct root logins |
+| `MaxAuthTries` | `3` | Limits authentication attempts per connection |
+| `PubkeyAuthentication` | `yes` | Enables public key authentication |
+| `PasswordAuthentication` | `no` | Completely disables password-based login |
+| `ClientAliveInterval` / `ClientAliveCountMax` | `300` / `0` | Terminates inactive sessions |
+| `Banner` | `/etc/ssh/banner.txt` | Displays a legal warning prior to authentication |
+| `AllowUsers` | `user` | Restricts which users are permitted to connect via SSH |
 
-![Edición de sshd_config - bloque 1](screenshots/03_pagina3.png)
-![Edición de sshd_config - bloque 2](screenshots/04_pagina3.png)
-![Edición de sshd_config - bloque 3](screenshots/05_pagina4.png)
-![Reinicio del servicio ssh](screenshots/06_pagina4.png)
+![Editing sshd_config - Block 1](screenshots/03_pagina3.png)
+![Editing sshd_config - Block 2](screenshots/04_pagina3.png)
+![Editing sshd_config - Block 3](screenshots/05_pagina4.png)
+![SSH Service Restart](screenshots/06_pagina4.png)
 
-**Autenticación por llave pública (Ed25519)**
+**Public Key Authentication (Ed25519)**
 
-Se generó un par de llaves Ed25519 en el atacante/cliente (`ssh-keygen -t ed25519`) y se copió la llave pública al servidor con `ssh-copy-id` sobre el puerto 2222.
+An Ed25519 key pair was generated on the attacker/client host (`ssh-keygen -t ed25519`) and the public key was transferred to the server via `ssh-copy-id` over port 2222.
 
-![Generación de llaves Ed25519](screenshots/07_pagina5.png)
-![Copia de llave pública al servidor](screenshots/08_pagina5.png)
-![Conexión exitosa por llave](screenshots/09_pagina5.png)
-![Permisos correctos en ~/.ssh](screenshots/10_pagina6.png)
+![Generating Ed25519 Keys](screenshots/07_pagina5.png)
+![Transferring Public Key to Server](screenshots/08_pagina5.png)
+![Successful Public Key Connection](screenshots/09_pagina5.png)
+![Correct Permissions on ~/.ssh](screenshots/10_pagina6.png)
 
-**Fail2Ban** — bloqueo automático de IPs con comportamiento de fuerza bruta:
+**Fail2Ban** — automated IP blocking based on brute-force behavior:
 
-```
+```ini
 [sshd]
-enable   = true
+enabled  = true
 port     = ssh
 maxretry = 3
 bantime  = 3600
 findtime = 600
+
 ```
 
-![Instalación de Fail2Ban](screenshots/11_pagina6.png)
-![Configuración jail.local](screenshots/12_pagina6.png)
-
-**Banner legal de advertencia** (`/etc/ssh/banner.txt`), mostrado antes de cualquier intento de autenticación:
-
-![Banner de advertencia legal](screenshots/13_pagina7.png)
-![Banner visible al conectar por SSH](screenshots/14_pagina8.png)
+**Legal Warning Banner** (`/etc/ssh/banner.txt`), displayed prior to any authentication attempt:
 
 ---
 
-## ⚔️ Fase 2 — Ataque controlado (antes vs. después)
+## ⚔️ Phase 2 — Controlled Attack (Before vs. After)
 
-### Antes del hardening (puerto 22, autenticación por contraseña)
+### Before Hardening (Port 22, Password Authentication)
 
-Se ejecutó **Hydra** contra el servidor. Dado que `rockyou.txt` completo tomaba demasiado tiempo, se usó un diccionario reducido con contraseñas típicas para validar el ataque de forma eficiente, y se corroboró el resultado con **Medusa**.
+**Hydra** was executed against the target server. Because processing the full `rockyou.txt` dictionary was time-prohibitive, a custom wordlist containing common passwords was leveraged to efficiently execute the attack, and findings were cross-verified using **Medusa**.
 
-![Ataque de fuerza bruta con Hydra](screenshots/15_pagina8.png)
-![Diccionario de contraseñas y resultado de Hydra](screenshots/16_pagina9.png)
-![Verificación cruzada con Medusa](screenshots/17_pagina9.png)
+Real-time attack monitoring over `/var/log/auth.log`:
 
-Monitoreo del ataque en tiempo real sobre `/var/log/auth.log`:
+**Result:** The server accepted a valid password following a sequence of failed attempts — the dictionary attack succeeded.
 
-![tail -f /var/log/auth.log durante el ataque](screenshots/18_pagina9.png)
-![Conteo de intentos fallidos por IP](screenshots/19_pagina10.png)
+### After Hardening (Port 2222, Public Key Only, Fail2Ban Enabled)
 
-**Resultado:** el servidor aceptó una contraseña válida tras una serie de intentos fallidos — el ataque de diccionario tuvo éxito.
+The exact same Hydra attack sequence was repeated against the hardened server.
 
-### Después del hardening (puerto 2222, solo llave pública, Fail2Ban activo)
-
-Se repitió exactamente el mismo ataque Hydra contra el servidor ya endurecido.
-
-![Hydra falla contra el servidor endurecido](screenshots/20_pagina10.png)
-![fail2ban-client status sshd - IP del atacante baneada](screenshots/21_pagina11.png)
-
-**Resultado:** `0 valid passwords found`. El servidor rechaza cualquier intento porque `PasswordAuthentication` está deshabilitado, y Fail2Ban banea la IP del atacante automáticamente tras superar `maxretry`.
+**Result:** `0 valid passwords found`. The server rejects all incoming requests because `PasswordAuthentication` is disabled, and Fail2Ban automatically bans the attacking IP upon exceeding `maxretry`.
 
 ---
 
-## 📊 Análisis comparativo
+## 📊 Comparative Analysis
 
-| Característica | Servidor vulnerable | Servidor endurecido |
-|---|---|---|
-| Superficie de ataque | Puerto estándar 22 (fácil de escanear) | Puerto no estándar 2222 |
-| Método de entrada | Contraseñas (vulnerables a diccionario) | Llaves Ed25519 (inmunes a fuerza bruta) |
-| Resiliencia | Nula; intentos ilimitados | Alta; baneo automático tras 3 intentos |
-| Privilegios | Login directo como root posible | Root deshabilitado; usuario específico requerido |
+| Feature | Vulnerable Server | Hardened Server |
+| --- | --- | --- |
+| Attack Surface | Standard Port 22 (easily scanned) | Non-standard Port 2222 |
+| Authentication Method | Passwords (susceptible to dictionary attacks) | Ed25519 Keys (immune to brute force) |
+| Resilience | None; unlimited attempts permitted | High; automated IP banning after 3 failures |
+| Privilege Management | Direct root login possible | Root disabled; specific non-root user required |
 
-**Diferencia clave en los logs:** en el escenario vulnerable, `auth.log` muestra una secuencia de `Failed password` seguida de un `Accepted password` — el servidor procesa cada intento sin resistencia. En el escenario endurecido, los logs muestran fallos de negociación de protocolo (no hay método de contraseña que probar), y `fail2ban.log` registra la detección y el baneo automático de la IP atacante, confirmado a nivel de red por `iptables`.
-
----
-
-## ✅ Conclusiones
-
-- **La medida más efectiva fue desactivar `PasswordAuthentication`.** Sin una contraseña que atacar, herramientas como Hydra o Medusa pierden toda utilidad, sin importar el tamaño del diccionario.
-- **La seguridad es por capas, no por una sola herramienta:** cambiar el puerto reduce ruido, las llaves eliminan el vector de contraseña, y Fail2Ban castiga activamente cualquier intento residual.
-- **Los logs son la "caja negra" del sistema:** sin `auth.log` y el log de Fail2Ban no habría forma de auditar ni demostrar qué ocurrió durante el incidente simulado.
-
-## 🚀 Recomendaciones adicionales
-
-- **Port Knocking** — mantener el puerto SSH cerrado hasta recibir una secuencia válida de "golpes".
-- **2FA (Google Authenticator / Duo vía PAM)** — capa extra incluso si la llave privada se ve comprometida.
-- **Auditoría con Lynis** — escaneos automáticos de hardening del kernel y permisos de archivos.
-- **VPN de administración** — no exponer SSH directamente a Internet; requerir VPN previa para alcanzar el servidor.
+**Key Log Differences:** In the vulnerable scenario, `auth.log` records a sequence of `Failed password` messages followed by `Accepted password` — processing each request without resistance. In the hardened scenario, logs show protocol negotiation failures (no password mechanism exposed to test), while `fail2ban.log` records detection and automated IP banning, enforced at the network layer via `iptables`.
 
 ---
 
-## 🧰 Herramientas utilizadas
+## ✅ Conclusions
+
+* **Disabling `PasswordAuthentication` was the single most effective control.** Without password authentication exposed, tools such as Hydra or Medusa lose all utility regardless of wordlist size.
+* **Security requires defense-in-depth:** changing default ports reduces noise, asymmetric keys eliminate password attack vectors, and Fail2Ban actively mitigates residual attempts.
+* **System logs serve as the ultimate source of truth:** without inspecting `auth.log` and `fail2ban.log`, auditing or demonstrating activities during simulated security incidents would be impossible.
+
+## 🚀 Additional Recommendations
+
+* **Port Knocking** — keep the SSH port closed until a valid sequence of packet "knocks" is received.
+* **MFA / 2FA (Google Authenticator or Duo via PAM)** — add an extra authentication factor in case private keys are compromised.
+* **Auditing with Lynis** — execute automated security scans for kernel hardening and file system permissions.
+* **Management VPN** — avoid exposing SSH directly to the Internet; require VPN access prior to reaching management endpoints.
+
+---
+
+## 🧰 Tools Used
 
 `OpenSSH` · `Fail2Ban` · `ssh-keygen` (Ed25519) · `Hydra` · `Medusa` · `nc` · `iptables` · `Kali Linux` · `Ubuntu Server`
 
-## ⚖️ Nota ética
+## ⚖️ Ethics & Disclaimer
 
-Todos los ataques se realizaron en un entorno de laboratorio propio, completamente aislado (red NAT privada), contra una máquina virtual creada específicamente para este ejercicio académico. Ningún sistema de terceros fue escaneado ni atacado. Este proyecto tiene fines exclusivamente educativos y de práctica defensiva.
+All simulated attacks were executed inside an isolated, self-contained laboratory environment (private NAT network) targeting a virtual machine built explicitly for academic research. No third-party infrastructure was scanned or targeted. This project was developed strictly for educational and defensive research purposes.
