@@ -171,9 +171,4 @@ python3 extract_pdf_to_project.py IAAC_PF_T6.pdf capturas --min-width 300
 
 ---
 
-## 📬 Contacto
-
-- yahna.chee@utp.ac.pa
-- nicole.staff@utp.ac.pa
-
 Repositorio: https://github.com/yahna-chee/yahnachee.github.io/tree/main/IA/soc_project
