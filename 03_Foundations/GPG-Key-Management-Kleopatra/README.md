@@ -1,37 +1,37 @@
-# Gestión de Claves GPG con Kleopatra
+# GPG Key Management with Kleopatra
 
-⚠️ Laboratorio académico realizado en un entorno controlado.
-Las claves y mensajes utilizados son de laboratorio.
+⚠️ Academic laboratory conducted within a controlled environment.  
+Keys and messages used are strictly for lab purposes.
 
-## Contexto
-Laboratorio de la asignatura Criptografía enfocado en el uso de
-criptografía asimétrica mediante GPG, utilizando la herramienta Kleopatra.
+## Context
+Cryptography course laboratory focused on the use of asymmetric cryptography 
+via GPG, using the Kleopatra tool.
 
-## Objetivo
-Comprender la gestión de claves criptográficas, el cifrado de información
-y la firma digital para garantizar confidencialidad e integridad.
+## Objective
+Understand cryptographic key management, information encryption, 
+and digital signatures to guarantee confidentiality and integrity.
 
-## Herramientas
+## Tools
 - Kleopatra
 - GnuPG (GPG)
 
-## Actividades realizadas
-- Generación de un par de claves pública/privada
-- Exportación e importación de claves públicas
-- Cifrado de mensajes utilizando la clave pública
-- Firma digital de mensajes
-- Verificación de firmas digitales
+## Activities Performed
+- Generation of a public/private key pair
+- Exporting and importing public keys
+- Message encryption using the public key
+- Digital signing of messages
+- Verification of digital signatures
 
-## Resultados
-- Mensajes cifrados correctamente descifrables solo con la clave privada
-- Firmas digitales verificadas exitosamente
-- Gestión segura de claves en el entorno local
+## Results
+- Encrypted messages successfully decrypted using only the private key
+- Digital signatures successfully verified
+- Secure key management in the local environment
 
-## Buenas prácticas aplicadas
-- Protección de la clave privada
-- Uso de contraseñas robustas
-- Verificación de identidad antes de confiar en una clave
+## Applied Best Practices
+- Protection of the private key
+- Use of strong passphrases
+- Identity verification prior to trusting a key
 
-## Aprendizaje
-Comprensión práctica del funcionamiento de GPG, la diferencia entre
-cifrado y firma digital, y la importancia de la gestión de claves.
+## Key Takeaways
+Practical understanding of GPG operations, the difference between 
+encryption and digital signatures, and the critical importance of key management.
