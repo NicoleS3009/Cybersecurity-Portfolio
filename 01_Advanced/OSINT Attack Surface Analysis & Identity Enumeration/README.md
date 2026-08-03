@@ -3,42 +3,42 @@
 ![License](https://img.shields.io/badge/License-Educational_Purpose_Only-red)
 ![Focus](https://img.shields.io/badge/Focus-OSINT_%7C_Recon_%7C_Identity-blue)
 
-Este repositorio documenta una serie de ejercicios de **reconocimiento pasivo (OSINT)** sobre infraestructuras reales. El objetivo es demostrar la capacidad técnica para identificar vectores de ataque, fugas de metadatos y configuraciones erróneas en entornos empresariales sin realizar acciones intrusivas.
+This repository documents a series of **passive reconnaissance (OSINT)** exercises on real infrastructures. The goal is to demonstrate technical capability to identify attack vectors, metadata leaks, and misconfigurations in enterprise environments without performing intrusive actions.
 
 ---
 
-## 🔍 Casos de Estudio
+## 🔍 Case Studies
 
-### 1. Enumeración de Directorio en Entornos de Colaboración (Caso: Logística)
-* **Vulnerabilidad:** Configuración permisiva de *External Access* en Microsoft Teams.
-* **Técnica:** Aprovechamiento de la búsqueda global de identidades para el *harvesting* de perfiles internos.
-* **Hallazgo:** Extracción exitosa de perfiles directivos (Fotos, Nombres completos, Cargos) sin interacción ni autorización previa.
-* **Correlación de Riesgo:** Se detectó la falta de certificados **TLS/SSL** en la infraestructura web principal, lo que sugiere una postura de seguridad inmadura y una alta probabilidad de éxito para ataques de *Man-in-the-Middle* (MitM) o *Phishing* dirigido.
+### 1. Directory Enumeration in Collaboration Environments — Logistics Case
+* **Vulnerability:** Permissive *External Access* configuration in Microsoft Teams.
+* **Technique:** Leveraging global identity search for profile harvesting.
+* **Finding:** Successful extraction of executive profiles (photos, full names, job titles) without interaction or prior authorization.
+* **Risk Correlation:** A lack of **TLS/SSL** certificates was detected on the main web infrastructure, suggesting an immature security posture and a high likelihood of success for *Man-in-the-Middle* (MitM) or targeted *phishing* attacks.
 
-Mediante el uso de DeHashed, se correlacionaron las identidades obtenidas con brechas de datos históricas, identificando que el X% de los perfiles directivos poseían credenciales filtradas en texto plano, aumentando el riesgo de compromiso de cuentas empresariales
+Using DeHashed, the enumerated identities were correlated with historical data breaches, identifying that **X%** of executive profiles had credentials leaked in plaintext, increasing the risk of enterprise account compromise.
 
-### 2. Bypass de Ofuscación de Infraestructura (Caso: Salud/Seguros)
-* **Escenario:** Dominio empresarial protegido por un Secure Email Gateway (SpamTitan) y técnicas de *SPF Flattening*.
-* **Técnica:** Pivotaje mediante el flujo de **Login Redirect** en Microsoft 365 para validación de identidad y resolución de origen.
-* **Descubrimiento:** Se logró resolver un **Tenant compartido**, revelando la estructura corporativa oculta y los activos reales de la organización que no eran visibles tras el dominio de contacto inicial.
+### 2. Bypass of Infrastructure Obfuscation — Healthcare/Insurance Case
+* **Scenario:** Corporate domain protected by a Secure Email Gateway (SpamTitan) and SPF flattening techniques.
+* **Technique:** Pivoting via Microsoft 365 **Login Redirect** flow for identity validation and origin resolution.
+* **Discovery:** A **shared tenant** was resolved, revealing the hidden corporate structure and the organization’s real assets that were not visible from the initial contact domain.
 
-### 3. Auditoría de Canales de Reclutamiento (Caso: Infraestructura Crítica)
-* **Fallo Detectado:** El canal oficial de captación de talento (`miprimerempleo@...`) se encontraba inoperante, devolviendo un error **SMTP 550 5.4.1 (Access Denied)**, lo que indica una mala configuración del filtro de destinatarios.
-* **Resolución/Validación:** Mediante el análisis de patrones de nomenclatura institucional y técnicas de enumeración, se logró validar el vector de contacto real utilizando el patrón `[inicial][apellido]`.
-* **Impacto:** Se superaron con éxito las políticas de **Directory-Based Edge Blocking (DBEB)**, confirmando la posibilidad de realizar ataques de fuerza bruta de usuarios o *Account Takeover* (ATO).
+### 3. Recruitment Channel Audit — Critical Infrastructure Case
+* **Detected Issue:** The official recruitment contact (`miprimerempleo@...`) was non-functional, returning **SMTP 550 5.4.1 (Access Denied)**, indicating a misconfigured recipient filter.
+* **Resolution/Validation:** By analyzing institutional naming patterns and enumeration techniques, the real contact vector was validated using the `[firstinitial][lastname]` pattern.
+* **Impact:** Directory-Based Edge Blocking (DBEB) policies were successfully bypassed, confirming the possibility of user brute-force attacks or *Account Takeover* (ATO).
 
 ---
 
-## 🛠 Herramientas y Metodología
-Para la ejecución de estas auditorías se emplearon técnicas de **OSINT (Open Source Intelligence)** y **EASM (External Attack Surface Management)**, utilizando las siguientes plataformas:
+## 🛠 Tools and Methodology
+These audits were conducted using **OSINT (Open Source Intelligence)** and **EASM (External Attack Surface Management)** techniques, leveraging the following platforms:
 
-* **Identificación de Identidades y Huella Digital:** * [SignalHire](https://www.signalhire.com/) & [RocketReach](https://rocketreach.co/): Extracción y validación de estructuras de correo corporativo y organigramas.
-    * [Epieos](https://epieos.com/): Investigación de perfiles vinculados a correos electrónicos (Reverse Email Lookup) para detectar fugas en plataformas externas.
-* **Análisis de Infraestructura y Correo:**
-    * [MXToolbox](https://mxtoolbox.com/): Diagnóstico de registros DNS (MX, SPF, DKIM) y análisis de reputación de red.
-    * [VerifyEmailAddress](https://www.verifyemailaddress.org/): Validación de entregabilidad SMTP para confirmar vectores de contacto sin envío de tráfico malicioso.
-* **Identificación de Credenciales y Fugas de Datos:**
-    * [DeHashed](https://dehashed.com/): Consulta de bases de datos de brechas de seguridad para evaluar el riesgo de *Credential Stuffing* derivado de las identidades enumeradas.
+* **Identity and Footprint Discovery:** [SignalHire](https://www.signalhire.com/) & [RocketReach](https://rocketreach.co/): extraction and validation of corporate email structures and org charts.
+    * [Epieos](https://epieos.com/): investigation of profiles linked to email addresses (Reverse Email Lookup) to detect leaks on external platforms.
+* **Infrastructure and Email Analysis:**
+    * [MXToolbox](https://mxtoolbox.com/): DNS record diagnostics (MX, SPF, DKIM) and network reputation analysis.
+    * [VerifyEmailAddress](https://www.verifyemailaddress.org/): SMTP deliverability validation to confirm contact vectors without sending malicious traffic.
+* **Credential and Data Leak Identification:**
+    * [DeHashed](https://dehashed.com/): querying breach databases to assess the risk of *credential stuffing* from enumerated identities.
 
 ## ⚠️ Disclaimer
-Toda la información contenida en este repositorio tiene fines exclusivamente **educativos y de concienciación en ciberseguridad**. No se realizaron ataques disruptivos ni se comprometió la integridad de los sistemas analizados. Todas las vulnerabilidades críticas han sido reportadas/detectadas bajo un marco de ética profesional.
+All information contained in this repository is for **educational and cybersecurity awareness** purposes only. No disruptive attacks were performed and system integrity was not compromised. All critical vulnerabilities were reported/detected under a professional ethical framework.
