@@ -1,177 +1,177 @@
-# 🔐 ZTUTP Soluciones — Implementación de Red Wi-Fi Zero Trust
+# 🔐 ZTUTP Solutions — Zero Trust Wi-Fi Network Implementation
 
-> **Caso de estudio académico:** diseño e implementación de una arquitectura **Zero Trust** para una WLAN corporativa, desarrollado en tres fases — desde el análisis teórico de la superficie de ataque hasta un laboratorio funcional con **pfSense + Cloudflare Zero Trust**.
+> **Academic case study:** design and implementation of a **Zero Trust** architecture for a corporate WLAN, developed in three phases — from a theoretical attack-surface analysis to a functional lab with **pfSense + Cloudflare Zero Trust**.
 
-**Universidad Tecnológica de Panamá** · Facultad de Ingeniería en Sistemas Computacionales · Licenciatura en Ciberseguridad · Asignatura Ciberseguridad III
-
----
-
-## 📋 Tabla de Contenidos
-
-- [Resumen del proyecto](#-resumen-del-proyecto)
-- [Parte I — Análisis y prototipo conceptual](#parte-i--análisis-y-prototipo-conceptual)
-- [Parte II — Prototipo en Packet Tracer](#parte-ii--prototipo-en-packet-tracer)
-- [Parte III — Laboratorio real (pfSense + Cloudflare)](#parte-iii--laboratorio-real-pfsense--cloudflare)
-- [Evidencia de pruebas](#-evidencia-de-pruebas)
-- [Stack de herramientas](#-stack-de-herramientas)
-- [Principios NIST SP 800-207 aplicados](#-principios-nist-sp-800-207-aplicados)
-- [Conclusiones](#-conclusiones)
-- [Referencias](#-referencias)
+**Technological University of Panama** · Faculty of Computer Systems Engineering · B.S. in Cybersecurity · Cybersecurity III Course
 
 ---
 
-## 🎯 Resumen del proyecto
+## 📋 Table of Contents
 
-El caso de estudio simula a **ZTUTP Soluciones**, una empresa ficticia de ciberseguridad, encargada de modernizar la infraestructura de un cliente con **500 empleados** y una superficie de ataque expuesta por dispositivos BYOD y accesos Wi-Fi sin control de identidad.
+- [Project Summary](#-project-summary)
+- [Part I — Analysis and Conceptual Prototype](#part-i--analysis-and-conceptual-prototype)
+- [Part II — Packet Tracer Prototype](#part-ii--packet-tracer-prototype)
+- [Part III — Real Lab (pfSense + Cloudflare)](#part-iii--real-lab-pfsense--cloudflare)
+- [Test Evidence](#-test-evidence)
+- [Tool Stack](#-tool-stack)
+- [NIST SP 800-207 Principles Applied](#-nist-sp-800-207-principles-applied)
+- [Conclusions](#-conclusions)
+- [References](#-references)
 
-El objetivo fue eliminar el modelo de **confianza implícita** y reemplazarlo por verificación continua, aplicando los principios de **NIST SP 800-207**, en tres etapas incrementales:
+---
 
-| Parte | Enfoque | Entregable |
+## 🎯 Project Summary
+
+The case study simulates **ZTUTP Solutions**, a fictitious cybersecurity company tasked with modernizing the infrastructure of a client with **500 employees** and an attack surface exposed by BYOD devices and Wi-Fi access with no identity control.
+
+The goal was to eliminate the **implicit trust** model and replace it with continuous verification, applying **NIST SP 800-207** principles, across three incremental stages:
+
+| Part | Focus | Deliverable |
 |---|---|---|
-| **I** | Análisis de superficie de ataque + diseño conceptual | Arquitectura Zero Trust de alto nivel |
-| **II** | Prototipo simulado | Topología funcional en **Cisco Packet Tracer** (802.1X, RADIUS, ACLs) |
-| **III** | Implementación real | Laboratorio con **pfSense**, **Docker**, **Cloudflare Tunnel** y **Cloudflare Access** |
+| **I** | Attack surface analysis + conceptual design | High-level Zero Trust architecture |
+| **II** | Simulated prototype | Functional topology in **Cisco Packet Tracer** (802.1X, RADIUS, ACLs) |
+| **III** | Real implementation | Lab with **pfSense**, **Docker**, **Cloudflare Tunnel**, and **Cloudflare Access** |
 
 ---
 
-## Parte I — Análisis y prototipo conceptual
+## Part I — Analysis and Conceptual Prototype
 
-Se identificaron tres áreas críticas de exposición: servidores financieros, dispositivos BYOD y los puntos de acceso Wi-Fi. A partir de ahí se modeló el ciclo de vida del ataque (descubrimiento → infiltración → movimiento lateral) y se diseñó una arquitectura de referencia con **Gateway ZTNA**, **IAM**, **MFA** y **MDM/EDR** como plano de control.
+Three critical exposure areas were identified: financial servers, BYOD devices, and Wi-Fi access points. From there, the attack lifecycle was modeled (discovery → infiltration → lateral movement), and a reference architecture was designed with **ZTNA Gateway**, **IAM**, **MFA**, and **MDM/EDR** as the control plane.
 
 <p align="center">
-  <img src="screenshots/02_pagina8.png" width="600" alt="Arquitectura de la solución Zero Trust propuesta">
-  <br><em>Arquitectura propuesta: flujo interno (BYOD) y flujo externo (cliente no confiable)</em>
+  <img src="screenshots/02_pagina8.png" width="600" alt="Proposed Zero Trust solution architecture">
+  <br><em>Proposed architecture: internal flow (BYOD) and external flow (untrusted client)</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/03_pagina9.png" width="600" alt="Flujo de acceso Zero Trust con dispositivo BYOD">
-  <br><em>Flujo de acceso Zero Trust paso a paso para un dispositivo BYOD</em>
+  <img src="screenshots/03_pagina9.png" width="600" alt="Zero Trust access flow with a BYOD device">
+  <br><em>Step-by-step Zero Trust access flow for a BYOD device</em>
 </p>
 
 ---
 
-## Parte II — Prototipo en Packet Tracer
+## Part II — Packet Tracer Prototype
 
-Se construyó una WLAN 802.1X con autenticación **RADIUS/AAA**, segmentación por VLANs y **ACLs de microsegmentación** que bloquean el movimiento lateral entre el segmento BYOD, los servidores y el plano de control.
+An 802.1X WLAN was built with **RADIUS/AAA** authentication, VLAN segmentation, and **microsegmentation ACLs** that block lateral movement between the BYOD segment, the servers, and the control plane.
 
 <p align="center">
-  <img src="screenshots/05_pagina11.png" width="500" alt="Road Map Zero Trust aplicado al caso de estudio">
-  <br><em>Roadmap de implementación en 4 fases (visibilidad → identidad → NAC → microsegmentación)</em>
+  <img src="screenshots/05_pagina11.png" width="500" alt="Zero Trust Road Map applied to the case study">
+  <br><em>4-phase implementation roadmap (visibility → identity → NAC → microsegmentation)</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/07_pagina15.png" width="600" alt="Topología del prototipo Zero Trust WLAN en Packet Tracer">
-  <br><em>Topología final en Packet Tracer: Router-Core, Switch-Core, WLC, AP, servidor RADIUS y servidores segmentados por VLAN</em>
+  <img src="screenshots/07_pagina15.png" width="600" alt="Zero Trust WLAN prototype topology in Packet Tracer">
+  <br><em>Final Packet Tracer topology: Core Router, Core Switch, WLC, AP, RADIUS server, and VLAN-segmented servers</em>
 </p>
 
-**Resultado de las pruebas de segmentación:**
+**Segmentation test results:**
 
-| Escenario | Origen → Destino | Resultado |
+| Scenario | Source → Destination | Result |
 |---|---|---|
-| A | Laptop BYOD → Router (gateway VLAN) | ✅ Ping exitoso |
-| B | Laptop BYOD → Servidor Financiero | ⛔ `Destination host unreachable` |
-| C | Laptop BYOD → Servidor RADIUS (plano de control) | ⛔ `Destination host unreachable` |
+| A | BYOD Laptop → Router (VLAN gateway) | ✅ Successful ping |
+| B | BYOD Laptop → Financial Server | ⛔ `Destination host unreachable` |
+| C | BYOD Laptop → RADIUS Server (control plane) | ⛔ `Destination host unreachable` |
 
 ---
 
-## Parte III — Laboratorio real (pfSense + Cloudflare)
+## Part III — Real Lab (pfSense + Cloudflare)
 
-La fase final llevó el concepto a un entorno real y funcional, **sin DMZ**, demostrando que en Zero Trust la protección depende de la **identidad y la política**, no de la ubicación del recurso en la red.
+The final phase brought the concept into a real, functional environment, **with no DMZ**, demonstrating that in Zero Trust, protection depends on **identity and policy**, not on where the resource sits on the network.
 
 <p align="center">
-  <img src="screenshots/08_pagina24.png" width="600" alt="Topología del laboratorio Zero Trust real">
-  <br><em>Topología simplificada: pfSense como firewall deny-by-default y Ubuntu Server con Docker (Nginx + cloudflared)</em>
+  <img src="screenshots/08_pagina24.png" width="600" alt="Real Zero Trust lab topology">
+  <br><em>Simplified topology: pfSense as a deny-by-default firewall and Ubuntu Server with Docker (Nginx + cloudflared)</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/09_pagina25.png" width="600" alt="Topología detallada del laboratorio en PNETLab">
-  <br><em>Diagrama detallado del laboratorio en PNETLab: reglas deny-by-default y resumen de redes</em>
+  <img src="screenshots/09_pagina25.png" width="600" alt="Detailed lab topology in PNETLab">
+  <br><em>Detailed lab diagram in PNETLab: deny-by-default rules and network summary</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/10_pagina28.png" width="600" alt="Panel de Cloudflare Zero Trust">
-  <br><em>Panel "Get started with Zero Trust" en Cloudflare, punto de partida de la capa ZTNA</em>
+  <img src="screenshots/10_pagina28.png" width="600" alt="Cloudflare Zero Trust panel">
+  <br><em>"Get started with Zero Trust" panel in Cloudflare, the starting point for the ZTNA layer</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/11_pagina29.png" width="400" alt="Creación de un túnel en Cloudflare">
-  <br><em>Creación del Cloudflare Tunnel usado para publicar el servidor sin abrir puertos</em>
+  <img src="screenshots/11_pagina29.png" width="400" alt="Creating a tunnel in Cloudflare">
+  <br><em>Creating the Cloudflare Tunnel used to publish the server without opening any ports</em>
 </p>
 
 ---
 
-## ✅ Evidencia de pruebas
+## ✅ Test Evidence
 
-Seis pruebas validaron el comportamiento **deny-by-default** del laboratorio real:
+Six tests validated the **deny-by-default** behavior of the real lab:
 
 <p align="center">
-  <img src="screenshots/12_pagina30.png" width="450" alt="Código OTP recibido por correo">
-  <br><em>Prueba 1 — Acceso autorizado: código OTP enviado por Cloudflare Access</em>
+  <img src="screenshots/12_pagina30.png" width="450" alt="OTP code received by email">
+  <br><em>Test 1 — Authorized access: OTP code sent by Cloudflare Access</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/13_pagina30.png" width="450" alt="Portal accedido tras autenticación">
-  <br><em>Prueba 1 — Portal visible únicamente tras superar la verificación de identidad</em>
+  <img src="screenshots/13_pagina30.png" width="450" alt="Portal accessed after authentication">
+  <br><em>Test 1 — Portal visible only after passing identity verification</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/14_pagina31.png" width="450" alt="Acceso denegado por Cloudflare Access">
-  <br><em>Prueba 2 — Acceso no autorizado: Cloudflare Access deniega el login</em>
+  <img src="screenshots/14_pagina31.png" width="450" alt="Access denied by Cloudflare Access">
+  <br><em>Test 2 — Unauthorized access: Cloudflare Access denies the login</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/15_pagina32.png" width="450" alt="Ping bloqueado hacia el servidor">
-  <br><em>Prueba 4 — Movimiento lateral bloqueado: ping desde la LAN hacia el servidor (100% perdido)</em>
+  <img src="screenshots/15_pagina32.png" width="450" alt="Ping blocked to the server">
+  <br><em>Test 4 — Lateral movement blocked: ping from the LAN to the server (100% lost)</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/16_pagina33.png" width="450" alt="Conexión RDP fallida">
-  <br><em>Prueba 4 — Intento de Escritorio Remoto (RDP) rechazado por las reglas deny-by-default de pfSense</em>
+  <img src="screenshots/16_pagina33.png" width="450" alt="Failed RDP connection">
+  <br><em>Test 4 — Remote Desktop (RDP) attempt rejected by pfSense's deny-by-default rules</em>
 </p>
 
-| # | Prueba | Resultado esperado |
+| # | Test | Expected Result |
 |---|---|---|
-| 1 | Acceso autorizado con OTP | ✅ Acceso concedido |
-| 2 | Acceso no autorizado | ⛔ Access Denied |
-| 3 | Acceso directo al servidor (nmap) | ⛔ Puertos filtrados/cerrados |
-| 4 | Movimiento lateral (ping/RDP/SSH) | ⛔ Bloqueado por pfSense |
-| 5 | Solo servicio autorizado (curl) | ✅ Solo responde vía túnel Cloudflare |
-| 6 | Revocación y expiración de sesión | ⛔ Re-autenticación requerida |
+| 1 | Authorized access with OTP | ✅ Access granted |
+| 2 | Unauthorized access | ⛔ Access Denied |
+| 3 | Direct access to the server (nmap) | ⛔ Filtered/closed ports |
+| 4 | Lateral movement (ping/RDP/SSH) | ⛔ Blocked by pfSense |
+| 5 | Authorized service only (curl) | ✅ Responds only via the Cloudflare tunnel |
+| 6 | Session revocation and expiration | ⛔ Re-authentication required |
 
 ---
 
-## 🛠 Stack de herramientas
+## 🛠 Tool Stack
 
-| Componente | Herramienta | Función |
+| Component | Tool | Function |
 |---|---|---|
-| Firewall | pfSense CE 2.6.0 | Segmentación, deny-by-default, NAT |
-| Servidor Web | Nginx (Docker) | Aplicación interna protegida |
-| Túnel Zero Trust | cloudflared (Docker) | Conexión saliente cifrada, sin puertos abiertos |
-| Control de acceso | Cloudflare Access | Autenticación por identidad + OTP |
-| IAM (prototipo) | Keycloak | Gestión centralizada de identidades |
-| MFA | Google Authenticator / privacyIDEA | Verificación multifactor |
-| MDM/EDR | OpenEDR / Wazuh | Monitoreo de postura del dispositivo |
-| Microsegmentación (real) | OPNsense / pfSense | Aislamiento por segmento |
-| SO / contenedores | Ubuntu Server 22.04 + Docker Compose | Host de servicios |
+| Firewall | pfSense CE 2.6.0 | Segmentation, deny-by-default, NAT |
+| Web Server | Nginx (Docker) | Protected internal application |
+| Zero Trust Tunnel | cloudflared (Docker) | Encrypted outbound connection, no open ports |
+| Access Control | Cloudflare Access | Identity-based authentication + OTP |
+| IAM (prototype) | Keycloak | Centralized identity management |
+| MFA | Google Authenticator / privacyIDEA | Multi-factor verification |
+| MDM/EDR | OpenEDR / Wazuh | Device posture monitoring |
+| Microsegmentation (real) | OPNsense / pfSense | Segment isolation |
+| OS / containers | Ubuntu Server 22.04 + Docker Compose | Service host |
 
 ---
 
-## 📐 Principios NIST SP 800-207 aplicados
+## 📐 NIST SP 800-207 Principles Applied
 
-- **Deny-by-Default** — todo el tráfico se bloquea salvo regla o política explícita.
-- **Acceso basado en identidad con MFA** — autenticación obligatoria antes de cualquier acceso.
-- **Mínimo privilegio** — el túnel solo expone el recurso específico autorizado, nunca la red completa.
-- **Verificación continua y expiración de sesión** — sesiones de 15 minutos con revocación inmediata.
-
----
-
-## 🧾 Conclusiones
-
-El laboratorio demostró que una arquitectura Zero Trust completa puede implementarse con **herramientas gratuitas y de código abierto**, con un costo total cercano a **$1 USD/año** (solo el dominio). La eliminación intencional de la DMZ confirmó el principio central del modelo: la ubicación del recurso en la red no determina su confianza — la protección depende de la identidad verificada y la política aplicada en cada solicitud.
+- **Deny-by-Default** — all traffic is blocked unless there's an explicit rule or policy.
+- **Identity-based access with MFA** — mandatory authentication before any access.
+- **Least privilege** — the tunnel exposes only the specific authorized resource, never the whole network.
+- **Continuous verification and session expiration** — 15-minute sessions with immediate revocation.
 
 ---
 
-## 📚 Referencias
+## 🧾 Conclusions
+
+The lab demonstrated that a complete Zero Trust architecture can be implemented with **free and open-source tools**, at a total cost of roughly **$1 USD/year** (the domain only). The intentional removal of the DMZ confirmed the model's core principle: a resource's location on the network does not determine its trust level — protection depends on verified identity and the policy applied to each request.
+
+---
+
+## 📚 References
 
 - Rose, S., Borchert, O., Mitchell, S., & Connelly, S. (2020). *Zero Trust Architecture*. NIST SP 800-207. https://csrc.nist.gov/pubs/sp/800/207/final
 - Cloudflare, Inc. (2026). *Cloudflare Zero Trust Documentation*. https://developers.cloudflare.com/cloudflare-one/
@@ -181,4 +181,4 @@ El laboratorio demostró que una arquitectura Zero Trust completa puede implemen
 
 ---
 
-<p align="center"><em>Proyecto académico — Ciberseguridad III, Universidad Tecnológica de Panamá.</em></p>
+<p align="center"><em>Academic project — Cybersecurity III, Technological University of Panama.</em></p>
