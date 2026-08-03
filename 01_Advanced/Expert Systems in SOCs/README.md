@@ -1,174 +1,167 @@
-# Sistemas Expertos en Centros de Operaciones de Seguridad (SOC)
+# Expert Systems in Security Operations Centers SOC
 
-**Entrenamiento, generación y automatización de reglas expertas para el triaging inteligente de alertas**
+**Training, generation, and automation of expert rules for intelligent alert triaging**
 
-Proyecto semestral · Tema 6 · Licenciatura en Ciberseguridad — IA Aplicada a la Ciberseguridad
-Universidad Tecnológica de Panamá (UTP-FISC)
-
-
----
-
-## 📌 Descripción
-
-Un analista SOC Tier 1 puede recibir hasta 1,000 alertas diarias, la mayoría falsos positivos. Este proyecto demuestra cómo un **sistema experto basado en reglas**, combinado con un modelo de **Machine Learning (XGBoost)**, puede automatizar el *triaging* de alertas de seguridad, priorizando lo que realmente importa y reduciendo el *alert fatigue*.
-
-El *pipeline* combina:
-- Un **clasificador XGBoost** entrenado sobre tráfico de red real (dataset CIC-IDS2017).
-- Un **árbol *surrogate*** (profundidad 3) que aproxima al XGBoost con **92% de fidelidad**, generando reglas legibles tipo `if/then` exportables a formato **Sigma (YAML)**.
-- Explicabilidad vía **SHAP**, para justificar cada predicción.
-- Un **dashboard interactivo** (ipywidgets) que simula la clasificación de alertas en vivo.
+Semester project · Topic 6 · Bachelor in Cybersecurity — AI Applied to Cybersecurity  
+Technological University of Panama UTP-FISC
 
 ---
 
-## 🏗️ Arquitectura de la solución
+## 📌 Description
+
+A Tier 1 SOC analyst can receive up to 1,000 alerts per day, most of them false positives. This project demonstrates how a **rule-based expert system**, combined with a **Machine Learning (XGBoost)** model, can automate alert triaging, prioritize what truly matters, and reduce alert fatigue.
+
+The pipeline combines:
+- An **XGBoost classifier** trained on real network traffic (CIC-IDS2017 dataset).
+- A **surrogate tree** (depth 3) that approximates the XGBoost with **92% fidelity**, producing human-readable `if/then` rules exportable to **Sigma (YAML)**.
+- Explainability via **SHAP** to justify each prediction.
+- An **interactive dashboard** (ipywidgets) that simulates live alert classification.
+
+---
+
+## 🏗️ Solution Architecture
 
 ```
-Fuentes de alertas (Sysmon / SIEM / XDR / IDS)
+Alert sources (Sysmon / SIEM / XDR / IDS)
         ↓
-Preprocesamiento (normalización, parsing)
+Preprocessing (normalization, parsing)
         ↓
    ┌────────────┬───────────────┐
    ↓            ↓
-Motor de reglas         Modelo ML
-(Sigma/Wazuh/Splunk)     (XGBoost, batch sobre CIC-IDS2017)
+Rules Engine         ML Model
+(Sigma/Wazuh/Splunk)  (XGBoost, batch on CIC-IDS2017)
    └────────────┴───────────────┘
         ↓
-Priorización (score de criticidad)
+Prioritization (criticality score)
         ↓
-SOAR: playbook automático y escalamiento a analista
+SOAR: automated playbook and escalation to analyst
 ```
 
 ---
 
 ## 📊 Dataset
 
-- **Fuente:** [CIC-IDS2017](https://www.unb.ca/cic/datasets/ids-2017) (vía Kaggle, versión limpia/preprocesada) — dataset público de tráfico de red, no sintético.
-- **Volumen:** 2,520,590 flujos de red depurados · 53 columnas.
-- **Conjunto de prueba:** ~630,000 flujos (25%), exactitud global ~99%.
-- **Justificación ética:** dataset público, anonimizado, generado en laboratorio por el Canadian Institute for Cybersecurity.
+- **Source:** [CIC-IDS2017](https://www.unb.ca/cic/datasets/ids-2017) (via Kaggle, cleaned/preprocessed version) — public network traffic dataset, not synthetic.  
+- **Volume:** 2,520,590 cleaned network flows · 53 columns.  
+- **Test set:** ~630,000 flows (25%), overall accuracy ~99%.  
+- **Ethical justification:** public, anonymized dataset generated in a lab by the Canadian Institute for Cybersecurity.
 
 <p align="center">
-  <img src="screenshots/01_dataset_head.png" width="700" alt="head() del DataFrame de alertas tras la depuración">
+  <img src="screenshots/01_dataset_head.png" width="700" alt="DataFrame head after preprocessing">
 </p>
-<p align="center"><em>Salida de <code>head()</code> del DataFrame en Google Colab, tras la limpieza (2,520,590 filas × 53 columnas).</em></p>
+<p align="center"><em>Output of <code>head()</code> from the DataFrame in Google Colab after cleaning (2,520,590 rows × 53 columns).</em></p>
 
 ---
 
-## ⚙️ Procesamiento: clasificador XGBoost y reglas derivadas
+## ⚙️ Processing: XGBoost classifier and derived rules
 
-- **XGBoost** entrenado con flujos etiquetados por severidad (Benigno → Crítico); un **Random Forest** se usa únicamente para seleccionar *features* relevantes (importancia Gini).
-- Variables de mayor impacto: `Destination Port`, `Flow IAT Max`, `Packet Length Mean`.
-
-<p align="center">
-  <img src="screenshots/02_feature_importance.png" width="500" alt="Top 20 características más importantes - Random Forest">
-</p>
-<p align="center"><em>Top 20 características más importantes según Random Forest.</em></p>
-
-- Las reglas se generan automáticamente a partir de un **árbol *surrogate*** que imita al XGBoost con **92% de fidelidad**, produciendo condiciones `if/then` legibles (severidad final por rama).
+- **XGBoost** trained with flows labeled by severity (Benign → Critical); a **Random Forest** is used only to select relevant features (Gini importance).  
+- Highest-impact variables: **Destination Port**, **Flow IAT Max**, **Packet Length Mean**.
 
 <p align="center">
-  <img src="screenshots/03_reglas_surrogate.png" width="600" alt="Reglas generadas automáticamente por el árbol surrogate">
+  <img src="screenshots/02_feature_importance.png" width="500" alt="Top 20 feature importance - Random Forest">
 </p>
-<p align="center"><em>Reglas generadas automáticamente a partir del árbol surrogate (condición → severidad).</em></p>
+<p align="center"><em>Top 20 most important features according to Random Forest.</em></p>
 
-- **Explicabilidad (SHAP):** confirma qué variables pesan más en cada predicción, por clase de severidad.
+- Rules are automatically generated from a **surrogate tree** that mimics the XGBoost with **92% fidelity**, producing readable `if/then` conditions (final severity per branch).
 
 <p align="center">
-  <img src="screenshots/04_shap.png" width="500" alt="Importancia SHAP por variable y clase">
+  <img src="screenshots/03_reglas_surrogate.png" width="600" alt="Rules generated by surrogate tree">
 </p>
-<p align="center"><em>SHAP como evidencia de explicabilidad del modelo, por clase de severidad.</em></p>
+<p align="center"><em>Automatically generated rules from the surrogate tree (condition → severity).</em></p>
+
+- **Explainability (SHAP):** confirms which variables weigh most in each prediction, by severity class.
+
+<p align="center">
+  <img src="screenshots/04_shap.png" width="500" alt="SHAP importance by feature and class">
+</p>
+<p align="center"><em>SHAP as evidence of model explainability, by severity class.</em></p>
 
 ---
 
-## 📈 Resultados y métricas del modelo
+## 📈 Results and model metrics
 
-| Métrica | Valor obtenido |
+| Metric | Value |
 |---|---|
-| Accuracy | 0.9898 |
-| Precisión (Precision) | 0.9958 |
-| Exhaustividad (Recall) | 0.9898 |
-| F1-score | 0.9922 |
-| AUC | 0.9997 |
+| **Accuracy** | 0.9898 |
+| **Precision** | 0.9958 |
+| **Recall** | 0.9898 |
+| **F1-score** | 0.9922 |
+| **AUC** | 0.9997 |
 
 <p align="center">
-  <img src="screenshots/05_matriz_confusion.png" width="500" alt="Matriz de confusión del modelo de triage SOC">
+  <img src="screenshots/05_matriz_confusion.png" width="500" alt="Confusion matrix of the SOC triage model">
 </p>
-<p align="center"><em>Matriz de confusión — desempeño real del modelo de triage SOC.</em></p>
+<p align="center"><em>Confusion matrix — real performance of the SOC triage model.</em></p>
 
 <p align="center">
-  <img src="screenshots/06_classification_report.png" width="500" alt="Classification report por clase">
+  <img src="screenshots/06_classification_report.png" width="500" alt="Classification report by class">
 </p>
-<p align="center"><em>Classification report por clase (precisión, recall, F1-score, soporte).</em></p>
+<p align="center"><em>Classification report by class (precision, recall, F1-score, support).</em></p>
 
-> ⚠️ **Nota crítica:** el *recall* en la clase **Crítico** es alto (0.97), pero su precisión es baja (0.13) — el modelo prioriza deliberadamente **no perder incidentes críticos**, a costa de más falsos positivos en esa categoría. Esta es una decisión de diseño consciente, alineada con el principio de minimizar falsos negativos en seguridad.
+> ⚠️ **Critical note:** Recall for the **Critical** class is high (0.97), but its precision is low (0.13) — the model deliberately prioritizes **not missing critical incidents**, at the cost of more false positives in that category. This is a conscious design decision aligned with the principle of minimizing false negatives in security.
 
 ---
 
-## 🖥️ Simulación en vivo
+## 🖥️ Live simulation
 
-Dashboard interactivo (ipywidgets) que procesa flujos de red uno a uno y muestra: severidad detectada, nivel de confianza, contexto (variables clave) y explicación basada en SHAP, junto con la acción de respuesta sugerida.
+Interactive dashboard (ipywidgets) that processes network flows one by one and displays: detected severity, confidence level, context (key variables), and SHAP-based explanation, along with the suggested response action.
 
 <p align="center">
-  <img src="screenshots/07_dashboard_triage.png" width="500" alt="Dashboard interactivo de triage SOC en vivo">
+  <img src="screenshots/07_dashboard_triage.png" width="500" alt="Interactive SOC triage dashboard">
 </p>
-<p align="center"><em>Ejemplo de clasificación en vivo: severidad "Crítico" con 99.99% de confianza y recomendación de aislar host y escalar a Tier 2.</em></p>
+<p align="center"><em>Example live classification: severity "Critical" with 99.99% confidence and recommendation to isolate host and escalate to Tier 2.</em></p>
 
 ---
 
-## 📁 Contenido del repositorio
+## 📁 Repository contents
 
-- `IAAC_PF_T6.pdf` — presentación completa de la sustentación.
-- `extract_pdf_to_project.py` — script para extraer imágenes embebidas de un PDF (usado para generar las capturas de este README).
-- `screenshots/` — capturas seleccionadas del notebook, usadas en esta documentación.
-- `capturas/` — todas las imágenes extraídas del PDF (incluye logos y elementos menores).
+- `IAAC_PF_T6.pdf` — full presentation used for the defense.  
+- `extract_pdf_to_project.py` — script to extract embedded images from a PDF (used to generate the screenshots in this README).  
+- `screenshots/` — selected notebook screenshots used in this documentation.  
+- `capturas/` — all images extracted from the PDF (includes logos and minor elements).
 
-### Regenerar las capturas
 
-```bash
-python3 extract_pdf_to_project.py IAAC_PF_T6.pdf capturas --min-width 300
+## 🎓 AI fundamentals applied to the SOC
+
+| Approach | Role in the project |
+|---|---|
+| **Rule-based systems** | High-explainability `if/then` logic, foundation of automated triaging. |
+| **Supervised learning** | Alert classification (XGBoost) trained on historical labeled data. |
+| **Unsupervised learning** | Anomaly detection (e.g., Isolation Forest) for never-before-seen patterns. |
+| **LLMs and generative AI** | Assist in generating Sigma rules and producing natural-language explanations for alerts. |
+
+---
+
+## ⚖️ Limitations and ethical considerations
+
+- **Human-in-the-Loop:** critical decisions should not rely solely on the automated model; analysts must validate high-impact actions.  
+- **Bias and data quality:** models trained on incomplete or biased data can produce incorrect classifications; continuous evaluation is required.  
+- **Transparency:** lack of explainability undermines operational trust (mitigated here with surrogate rules + SHAP).  
+- **Privacy:** SOC AI systems process sensitive data (IPs, network events); apply data minimization and strict access controls.
+
+---
+
+## 🔭 Future directions
+
+- Hybrid systems that integrate explainable rules with adaptive models.  
+- Knowledge Graphs and Graph Neural Networks for advanced alert correlation.  
+- Multi-Agent Systems in the SOC: specialized agents collaborating on investigation, classification, and automated response.
+
+---
+
+## 📚 Main references
+
+- Goud, K. N., Jain, K., & Krishnan, P. (2026). A Semi-Supervised and Evasion-Aware Framework for Reducing Alert Fatigue in Security Operations Centers SoC.  
+- Priyanka, P. et al. (2026). Large Language Model SOC Automation: Future Opportunity and Threats of AI-Approved Defense.  
+- McElwee, S., Heaton, J., Fraley, J., & Cannady, J. (2017). Deep learning for prioritizing and responding to intrusion detection alerts.  
+- Sharbaf, M. S. (2026). Reengineering Cybersecurity Processes with Generative AI: From Automation to Strategic Alignment.  
+- MITRE ATT&CK. MITRE ATT&CK Matrix for Enterprise. [https://attack.mitre.org/](https://attack.mitre.org/)  
+- SigmaHQ (2023). Sigma: Generic signature format for cyber security detection mechanisms. [https://github.com/sigmahq/sigma](https://github.com/sigmahq/sigma)  
+- NIST (2025). Cybersecurity Framework Profile for Artificial Intelligence NIST IR 8596.  
+- University of New Brunswick (2017). CIC-IDS2017 Dataset. [https://www.unb.ca/cic/datasets/ids-2017](https://www.unb.ca/cic/datasets/ids-2017)
+
+---
+
+Repository: [https://github.com/yahna-chee/yahnachee.github.io/tree/main/IA/soc_project](https://github.com/yahna-chee/yahnachee.github.io/tree/main/IA/soc_project)
 ```
-
----
-
-## 🎓 Fundamentos de IA aplicados al SOC
-
-| Enfoque | Rol en el proyecto |
-|---|---|
-| **Sistemas basados en reglas** | Lógica `if/then` de alta explicabilidad, base del triaging automatizado. |
-| **Aprendizaje supervisado** | Clasificación de alertas (XGBoost) entrenada con datos históricos etiquetados. |
-| **Aprendizaje no supervisado** | Detección de anomalías (ej. Isolation Forest) para patrones nunca antes vistos. |
-| **LLMs / IA generativa** | Apoyo en generación de reglas Sigma y explicación de alertas en lenguaje natural. |
-
----
-
-## ⚖️ Limitaciones y consideraciones éticas
-
-- **Human-in-the-Loop:** las decisiones críticas no deben depender exclusivamente del modelo automatizado; los analistas deben validar acciones de alto impacto.
-- **Sesgo y calidad de datos:** modelos entrenados con datos incompletos o sesgados pueden producir clasificaciones incorrectas; requiere evaluación continua.
-- **Transparencia:** la falta de explicabilidad genera desconfianza operativa (mitigado aquí con reglas *surrogate* + SHAP).
-- **Privacidad:** los sistemas de IA en el SOC procesan datos sensibles (IPs, eventos de red); se debe aplicar minimización de datos y acceso controlado.
-
----
-
-## 🔭 Líneas futuras
-
-- Sistemas híbridos que integren reglas explicables con modelos adaptativos.
-- *Knowledge Graphs* y *Graph Neural Networks* para correlación avanzada de alertas.
-- *Multi-Agent Systems* en el SOC: agentes especializados colaborando en investigación, clasificación y respuesta automática.
-
----
-
-## 📚 Referencias principales
-
-- Goud, K. N., Jain, K., & Krishnan, P. (2026). *A Semi-Supervised and Evasion-Aware Framework for Reducing Alert Fatigue in Security Operations Centers (SoC)*.
-- Priyanka, P. et al. (2026). *Large Language Model SOC Automation: Future Opportunity and Threats of AI-Approved Defense*.
-- McElwee, S., Heaton, J., Fraley, J., & Cannady, J. (2017). *Deep learning for prioritizing and responding to intrusion detection alerts*.
-- Sharbaf, M. S. (2026). *Reengineering Cybersecurity Processes with Generative AI: From Automation to Strategic Alignment*.
-- MITRE ATT&CK (2026). *MITRE ATT&CK Matrix for Enterprise*. https://attack.mitre.org/
-- SigmaHQ (2023). *Sigma: Generic signature format for cyber security detection mechanisms*. https://github.com/sigmahq/sigma
-- NIST (2025). *Cybersecurity Framework Profile for Artificial Intelligence (NIST IR 8596)*.
-- University of New Brunswick (2017). *CIC-IDS2017 Dataset*. https://www.unb.ca/cic/datasets/ids-2017
-
----
-
-Repositorio: https://github.com/yahna-chee/yahnachee.github.io/tree/main/IA/soc_project
