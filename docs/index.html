@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicole S. — Cybersecurity Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101826;
+    --ink-2:#161f30;
+    --paper:#efead8;
+    --paper-2:#e7e1cb;
+    --brick:#a23e3e;
+    --brick-dim:#7c3232;
+    --gold:#c69a3d;
+    --text-light:#ede7d6;
+    --text-dim:#9aa3b5;
+    --text-dark:#1c2230;
+    --text-dark-dim:#5c5747;
+    --line:#2a3448;
+    --line-paper:#c9c2a6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink); color:var(--text-light); font-family:'Inter', sans-serif; line-height:1.6;}
+  ::selection{background:var(--brick); color:var(--text-light);}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 32px;}
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em;}
+
+  nav{position:sticky; top:0; z-index:50; background:rgba(16,24,38,0.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px; gap:16px;}
+  .nav-id{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--gold); letter-spacing:0.06em; white-space:nowrap;}
+  .nav-links{display:flex; gap:26px; list-style:none;}
+  .nav-links a{color:var(--text-dim); text-decoration:none; font-size:14px; font-weight:500; transition:color .2s;}
+  .nav-links a:hover{color:var(--text-light);}
+  .nav-right{display:flex; align-items:center; gap:14px;}
+  .lang-toggle{
+    display:flex; border:1px solid var(--line); border-radius:20px; overflow:hidden; font-family:'IBM Plex Mono',monospace; font-size:12px;
+  }
+  .lang-toggle button{
+    background:transparent; border:none; color:var(--text-dim); padding:6px 12px; cursor:pointer; font-family:inherit; font-size:12px; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--gold); color:var(--ink); font-weight:600;}
+  .nav-cta{border:1px solid var(--gold); color:var(--gold); padding:7px 14px; border-radius:2px; font-size:13px; font-family:'IBM Plex Mono',monospace; text-decoration:none; transition:.2s; white-space:nowrap;}
+  .nav-cta:hover{background:var(--gold); color:var(--ink);}
+  @media (max-width:820px){ .nav-links{display:none;} }
+
+  .hero{padding:96px 0 72px; background:radial-gradient(ellipse 900px 500px at 15% -10%, rgba(198,154,61,0.10), transparent 60%), var(--ink); border-bottom:1px solid var(--line); position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size:36px 36px; pointer-events:none;}
+  .case-tag{display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.08em; color:var(--gold); border:1px solid rgba(198,154,61,0.4); padding:6px 12px; border-radius:2px; margin-bottom:28px;}
+  .case-tag .dot{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  .hero h1{font-size:clamp(38px, 6vw, 62px); font-weight:700; line-height:1.05; max-width:820px; color:var(--text-light);}
+  .hero h1 span{color:var(--gold);}
+  .hero p.lead{max-width:600px; margin-top:22px; font-size:17px; color:var(--text-dim);}
+  .stamp-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:36px;}
+  .stamp{font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.05em; border:1.5px solid var(--gold); color:var(--gold); padding:7px 12px; border-radius:2px; background:rgba(198,154,61,0.08);}
+  .stamp:nth-child(odd){transform:rotate(-1deg);}
+  .stamp:nth-child(even){transform:rotate(1deg);}
+  .hero-actions{display:flex; gap:14px; margin-top:40px; flex-wrap:wrap;}
+  .btn-primary{background:var(--gold); color:var(--ink); text-decoration:none; font-weight:600; padding:13px 22px; border-radius:2px; font-size:14px; transition:.2s; display:inline-block;}
+  .btn-primary:hover{background:#dbae4d;}
+  .btn-secondary{border:1px solid var(--line); color:var(--text-light); text-decoration:none; padding:13px 22px; border-radius:2px; font-size:14px; transition:.2s; display:inline-block;}
+  .btn-secondary:hover{border-color:var(--text-dim);}
+
+  .section{padding:80px 0;}
+  .section.paper{background:var(--paper); color:var(--text-dark);}
+  .eyebrow{font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:12px;}
+  .section.paper .eyebrow{color:var(--brick);}
+  .section h2{font-size:clamp(26px,3.4vw,36px); margin-bottom:14px;}
+  .section > .wrap > p.desc{max-width:620px; color:var(--text-dim); margin-bottom:44px;}
+  .section.paper > .wrap > p.desc{color:var(--text-dark-dim);}
+
+  .about-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:56px; align-items:start;}
+  @media(max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-grid p{color:var(--text-dim); margin-bottom:16px; font-size:15.5px;}
+  .about-grid p strong{color:var(--text-light);}
+  .profile-card{border:1px solid var(--line); background:var(--ink-2); border-radius:4px; padding:26px;}
+  .profile-card .row{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed var(--line); font-size:13.5px; gap:10px;}
+  .profile-card .row:last-child{border-bottom:none;}
+  .profile-card .label{color:var(--text-dim); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+  .profile-card .val{color:var(--text-light); text-align:right;}
+
+  .focus-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+  @media(max-width:900px){.focus-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:520px){.focus-grid{grid-template-columns:1fr;}}
+  .focus-card{background:var(--ink-2); padding:28px 22px;}
+  .focus-card .icon{font-size:22px; margin-bottom:14px;}
+  .focus-card h3{font-size:16px; margin-bottom:8px; color:var(--text-light);}
+  .focus-card p{font-size:13.5px; color:var(--text-dim);}
+
+  .case-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+  @media(max-width:800px){.case-grid{grid-template-columns:1fr;}}
+  .case-card{background:#fbfaf4; border:1px solid var(--line-paper); border-radius:3px; padding:24px 24px 22px; position:relative; transition:transform .2s, box-shadow .2s;}
+  .case-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.08);}
+  .case-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:12px;}
+  .case-num{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--brick); letter-spacing:0.05em;}
+  .case-status{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.06em; border:1px solid var(--text-dark-dim); color:var(--text-dark-dim); padding:3px 8px; border-radius:2px; white-space:nowrap;}
+  .case-card h3{font-size:18px; color:var(--text-dark); margin-bottom:8px; line-height:1.25;}
+  .case-card .summary{font-size:13.5px; color:var(--text-dark-dim); margin-bottom:14px;}
+  .redact-line{display:block; font-family:'IBM Plex Mono',monospace; font-size:12.5px; background:#1c2230; color:#1c2230; padding:3px 8px; border-radius:2px; margin-bottom:6px; cursor:pointer; transition:color .25s, background .25s; user-select:none;}
+  .redact-line:hover, .redact-line:focus, .redact-line.open{background:#fbfaf4; color:var(--text-dark); outline:1px solid var(--line-paper);}
+  .redact-hint{font-size:10.5px; color:#b3ac95; font-style:italic; margin-bottom:14px;}
+  .tag-row{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+  .tag{font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--paper-2); color:var(--text-dark-dim); padding:4px 8px; border-radius:2px;}
+  .case-link{font-size:13px; font-weight:600; color:var(--brick); text-decoration:none; display:inline-flex; align-items:center; gap:5px;}
+  .case-link:hover{text-decoration:underline;}
+
+  .lab-list{border-top:1px solid var(--line);}
+  .lab-row{display:flex; justify-content:space-between; align-items:center; gap:16px; padding:18px 0; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+  .lab-row .lname{font-weight:600; color:var(--text-light); font-size:15px;}
+  .lab-row .lmeta{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-dim);}
+  .lab-row a{color:var(--gold); text-decoration:none; font-size:13px; font-weight:600; white-space:nowrap;}
+  .lab-row a:hover{text-decoration:underline;}
+
+  .badge-cloud{display:flex; flex-wrap:wrap; gap:10px;}
+  .badge{font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid var(--line); padding:8px 14px; border-radius:20px; color:var(--text-light); background:var(--ink-2);}
+
+  footer{background:var(--ink); border-top:1px solid var(--line); padding:64px 0 40px; text-align:center;}
+  footer h2{font-size:clamp(24px,3vw,32px); margin-bottom:16px;}
+  footer p{color:var(--text-dim); max-width:480px; margin:0 auto 32px;}
+  .footer-links{display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-bottom:40px;}
+  .footer-note{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5a6478; margin-top:24px;}
+  .disclaimer{max-width:640px; margin:40px auto 0; font-size:12.5px; color:var(--text-dim); border-left:2px solid var(--brick); padding:12px 18px; text-align:left; background:rgba(162,62,62,0.06);}
+
+  [data-i18n]{}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-id">EXP-2024-NS · <span data-i18n="nav.caseFile">CASE FILE</span></div>
+    <ul class="nav-links">
+      <li><a href="#about" data-i18n="nav.about">Perfil</a></li>
+      <li><a href="#focus" data-i18n="nav.focus">Áreas</a></li>
+      <li><a href="#cases" data-i18n="nav.cases">Proyectos</a></li>
+      <li><a href="#toolbox" data-i18n="nav.toolbox">Herramientas</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button type="button" data-lang="es" class="active">ES</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <a class="nav-cta" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio" target="_blank" rel="noopener"><span data-i18n="nav.cta">Ver en GitHub</span> →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="case-tag"><span class="dot"></span><span data-i18n="hero.tag">PORTAFOLIO ACTIVO · ACTUALIZADO 2026</span></div>
+    <h1 data-i18n-html="hero.h1">De la investigación criminal<br>a la <span>defensa digital.</span></h1>
+    <p class="lead" data-i18n="hero.lead">Estudiante de Ingeniería en Ciberseguridad con formación previa en Investigación Criminal. Este archivo reúne laboratorios ofensivos y defensivos, análisis forense y auditorías construidas en entornos controlados y aislados.</p>
+    <div class="stamp-row">
+      <div class="stamp" data-i18n="hero.stamp1">BLUE TEAM · EDR</div>
+      <div class="stamp" data-i18n="hero.stamp2">OSINT · RECON</div>
+      <div class="stamp" data-i18n="hero.stamp3">REVERSE ENGINEERING</div>
+      <div class="stamp" data-i18n="hero.stamp4">ITGC · AUDITORÍA</div>
+    </div>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#cases" data-i18n="hero.btnCases">Ver casos destacados</a>
+      <a class="btn-secondary" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio" target="_blank" rel="noopener" data-i18n="hero.btnRepo">Repositorio completo</a>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="about.eyebrow">// 01 — Perfil</div>
+    <h2 data-i18n="about.h2">Quién investiga este archivo</h2>
+    <div class="about-grid" style="margin-top:36px;">
+      <div>
+        <p data-i18n-html="about.p1"><strong>Ingeniería en Ciberseguridad</strong> en la Universidad Tecnológica de Panamá, con un punto de partida poco común: un background en <strong>Investigación Criminal</strong>.</p>
+        <p data-i18n="about.p2">Esa formación se traduce directamente en cómo trabajo la ciberseguridad: reconstruir la cadena de eventos, preservar evidencia, y entender el mecanismo de un ataque antes de diseñar la defensa que lo detiene.</p>
+        <p data-i18n="about.p3">Este repositorio agrupa laboratorios prácticos organizados por nivel de profundidad técnica — desde fundamentos criptográficos hasta pentesting de infraestructura Active Directory y arquitecturas Zero Trust.</p>
+      </div>
+      <div class="profile-card">
+        <div class="row"><span class="label" data-i18n="about.l1">FORMACIÓN</span><span class="val" data-i18n="about.v1">Ing. Ciberseguridad · UTP</span></div>
+        <div class="row"><span class="label" data-i18n="about.l2">BACKGROUND</span><span class="val" data-i18n="about.v2">Investigación Criminal</span></div>
+        <div class="row"><span class="label" data-i18n="about.l3">SISTEMAS</span><span class="val" data-i18n="about.v3">Windows Server, Win 10/11, Linux</span></div>
+        <div class="row"><span class="label" data-i18n="about.l4">ANÁLISIS</span><span class="val" data-i18n="about.v4">IDA Pro, WinDbg, Sysmon, Wireshark</span></div>
+        <div class="row"><span class="label" data-i18n="about.l5">SCRIPTING</span><span class="val">Python · PowerShell · Bash</span></div>
+        <div class="row"><span class="label" data-i18n="about.l6">LABS DOCUMENTADOS</span><span class="val" data-i18n="about.v6">13 proyectos activos</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="focus">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="focus.eyebrow">// 02 — Áreas de enfoque</div>
+    <h2 data-i18n="focus.h2">En qué se especializa esta investigación</h2>
+    <div class="focus-grid" style="margin-top:36px;">
+      <div class="focus-card">
+        <div class="icon">🛡️</div>
+        <h3 data-i18n="focus.t1">Blue Team & EDR</h3>
+        <p data-i18n="focus.d1">Detección de amenazas, análisis de memoria/procesos y desarrollo de contramedidas defensivas.</p>
+      </div>
+      <div class="focus-card">
+        <div class="icon">🕵️</div>
+        <h3 data-i18n="focus.t2">OSINT & Recon</h3>
+        <p data-i18n="focus.d2">Inteligencia de fuentes abiertas, mapeo de infraestructura y recolección de threat intelligence.</p>
+      </div>
+      <div class="focus-card">
+        <div class="icon">🧩</div>
+        <h3 data-i18n="focus.t3">Reverse Engineering</h3>
+        <p data-i18n="focus.d3">Análisis estático y dinámico de código, inspección de drivers y estructuras de kernel.</p>
+      </div>
+      <div class="focus-card">
+        <div class="icon">📋</div>
+        <h3 data-i18n="focus.t4">Auditoría & ITGC</h3>
+        <p data-i18n="focus.d4">Evaluación de controles generales de TI, gestión de accesos y cumplimiento de políticas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section paper" id="cases">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="cases.eyebrow">// 03 — Casos destacados</div>
+    <h2 data-i18n="cases.h2">Expedientes seleccionados</h2>
+    <p class="desc" data-i18n="cases.desc">Pasa el cursor (o toca en móvil) sobre las líneas redactadas para revelar el hallazgo de cada caso.</p>
+
+    <div class="case-grid">
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case1.num">CASO 01-A · AVANZADO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>Zero Trust Wi-Fi Network</h3>
+        <p class="summary" data-i18n="case1.summary">Diseño e implementación de una arquitectura Zero Trust para una WLAN corporativa, en tres fases: análisis teórico, prototipo en Packet Tracer y laboratorio real con pfSense + Cloudflare.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case1.finding">Hallazgo: red corporativa segmentada sin acceso implícito por defecto.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">pfSense</span><span class="tag">Cloudflare Zero Trust</span><span class="tag">Packet Tracer</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/01_Advanced/Implementation%20of%20a%20Zero%20Trust%20Wi-Fi%20Network" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case2.num">CASO 01-B · AVANZADO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>AD-CS Pentesting & Hardening</h3>
+        <p class="summary" data-i18n="case2.summary">Evaluación de un entorno Active Directory Certificate Services construido manualmente en Windows Server 2019, con explotación de plantillas de certificados vulnerables.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case2.finding">Hallazgo: cadena ESC1→PKINIT permitió obtener Domain Admin en menos de 2 horas.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">ESC1–ESC7</span><span class="tag">PKINIT Golden Cert</span><span class="tag">Domain Admin</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/01_Advanced/PKI-Certificate-Template-Attacks" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case3.num">CASO 01-C · AVANZADO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>Threat Hunting — Wazuh & Atomic Red Team</h3>
+        <p class="summary" data-i18n="case3.summary">Infraestructura SIEM/XDR con Wazuh para detectar y analizar eventos generados por ataques simulados, mapeados a la matriz MITRE ATT&CK.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case3.finding">Hallazgo: 3 técnicas de movimiento lateral detectadas y mapeadas a MITRE.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">Wazuh</span><span class="tag">MITRE ATT&CK</span><span class="tag">BloodHound</span><span class="tag">Mimikatz</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/01_Advanced/Active-Directory-Attack-and-Defense" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case4.num">CASO 01-D · AVANZADO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>OSINT: Attack Surface & Identity Enumeration</h3>
+        <p class="summary" data-i18n="case4.summary">Reconocimiento pasivo sobre infraestructuras reales para identificar vectores de ataque, fugas de metadatos y configuraciones erróneas sin acciones intrusivas.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case4.finding">Hallazgo: perfiles ejecutivos expuestos vía búsqueda global en Teams.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">OSINT</span><span class="tag" data-i18n="case4.tag">MS Teams</span><span class="tag" data-i18n="case4.tag2">Enumeración de identidad</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/01_Advanced/OSINT%20Attack%20Surface%20Analysis%20%26%20Identity%20Enumeration" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case5.num">CASO 02-A · INTERMEDIO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>Pentest Lab — Burp Suite · OWASP Juice Shop</h3>
+        <p class="summary" data-i18n="case5.summary">Evaluación de seguridad web con Burp Suite contra OWASP Juice Shop, identificando 10 fallos de seguridad, 5 de severidad crítica.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case5.finding">Hallazgo: 5 vulnerabilidades críticas explotables sin autenticación.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">Burp Suite</span><span class="tag">OWASP Top 10</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/02_Intermediate/OWASP%20Top%2010" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-num" data-i18n="case6.num">CASO 02-B · INTERMEDIO</span>
+          <span class="case-status" data-i18n="cases.status">EXPEDIENTE CERRADO</span>
+        </div>
+        <h3>SSH Hardening and Security Audit</h3>
+        <p class="summary" data-i18n="case6.summary">Endurecimiento de un servidor SSH validado con ataques de fuerza bruta controlados desde Kali Linux, comparando el comportamiento antes y después.</p>
+        <span class="redact-line" tabindex="0" data-i18n="case6.finding">Hallazgo: fuerza bruta bloqueada tras 3 intentos, 0% de éxito post-hardening.</span>
+        <p class="redact-hint" data-i18n="cases.hint">revelar hallazgo →</p>
+        <div class="tag-row"><span class="tag">sshd_config</span><span class="tag">Fail2Ban</span><span class="tag">Kali Linux</span></div>
+        <a class="case-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/02_Intermediate/SSH%20Attacks%20and%20Security" target="_blank" rel="noopener"><span data-i18n="cases.link">Ver expediente completo</span> →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" id="more-cases">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="more.eyebrow">// 04 — Archivo completo</div>
+    <h2 data-i18n="more.h2">Laboratorios adicionales</h2>
+    <p class="desc" data-i18n="more.desc">El resto de expedientes documentados en el repositorio, organizados por nivel.</p>
+
+    <div class="lab-list">
+      <div class="lab-row">
+        <div><div class="lname">Expert Systems in SOCs</div><div class="lmeta" data-i18n="lab1">Sistema experto + XGBoost para triage de alertas · AVANZADO</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/01_Advanced/Expert%20Systems%20in%20SOCs" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">Cloudflare WAF Laboratory</div><div class="lmeta" data-i18n="lab2">DNS, Tunnel, SSL/TLS y reglas WAF personalizadas · INTERMEDIO</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/02_Intermediate/WAF%20CLOUDFLARE" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">OpenVPN Server Deployment</div><div class="lmeta" data-i18n="lab3">PKI propia con EasyRSA sobre Ubuntu Server · INTERMEDIO</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/02_Intermediate/OpenVPN-Server-Deployment" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">Windows 11 Hardening</div><div class="lmeta" data-i18n="lab4">BitLocker, TPM 2.0, auditoría Nmap, script PowerShell · INTERMEDIO</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/02_Intermediate/Windows%2011%20hardening" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">Hash Cracking Analysis</div><div class="lmeta" data-i18n="lab5">Resistencia de algoritmos de hashing ante ataques de diccionario · FUNDAMENTOS</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/03_Foundations/Cryptography%20Challenge%20Analysis" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">GPG Key Management with Kleopatra</div><div class="lmeta" data-i18n="lab6">Criptografía asimétrica y firma digital · FUNDAMENTOS</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/03_Foundations/GPG-Key-Management-Kleopatra" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">Self-Signed TLS with OpenSSL</div><div class="lmeta" data-i18n="lab7">Comunicación cifrada en servidor web con certificado propio · FUNDAMENTOS</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/03_Foundations/Self-Signed-TLS-with-OpenSSL" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+      <div class="lab-row">
+        <div><div class="lname">Virtual Experience Programs — Forage</div><div class="lmeta" data-i18n="lab8">Programas de experiencia virtual en ciberseguridad · INTRODUCCIÓN</div></div>
+        <a href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/tree/main/04_Intro_Experience" target="_blank" rel="noopener"><span data-i18n="more.view">Ver</span> →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="toolbox">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="toolbox.eyebrow">// 05 — Kit de herramientas</div>
+    <h2 data-i18n="toolbox.h2">Equipo de campo</h2>
+    <div class="badge-cloud" style="margin-top:28px;">
+      <span class="badge">Wazuh</span><span class="badge">IDA Pro</span><span class="badge">WinDbg</span><span class="badge">Burp Suite</span>
+      <span class="badge">Wireshark</span><span class="badge">Sysmon</span><span class="badge">BloodHound</span><span class="badge">Mimikatz</span>
+      <span class="badge">pfSense</span><span class="badge">Cloudflare</span><span class="badge">Kali Linux</span><span class="badge">Nmap</span>
+      <span class="badge">Fail2Ban</span><span class="badge">OpenSSL</span><span class="badge">Python</span><span class="badge">PowerShell</span><span class="badge">Bash</span>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2 data-i18n="footer.h2">¿Hablamos?</h2>
+    <p data-i18n="footer.p">Abierta a oportunidades en Blue Team, análisis de amenazas y auditoría de seguridad.</p>
+    <div class="footer-links">
+      <a class="btn-primary" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn-secondary" id="readme-link" href="https://github.com/NicoleS3009/Cybersecurity-Portfolio/blob/main/README-es.md" target="_blank" rel="noopener" data-i18n="footer.readme">README en Español</a>
+    </div>
+    <div class="disclaimer" data-i18n="footer.disclaimer">
+      ⚠️ Todo el contenido, investigación y código de este repositorio fue desarrollado exclusivamente con fines educativos y de investigación defensiva, dentro de entornos de prueba aislados.
+    </div>
+    <div class="footer-note">EXP-2024-NS · Cybersecurity Portfolio · <span data-i18n="footer.uni">Universidad Tecnológica de Panamá</span></div>
+  </div>
+</footer>
+
+<script>
+const translations = {
+  es: {
+    "nav.caseFile":"CASE FILE","nav.about":"Perfil","nav.focus":"Áreas","nav.cases":"Proyectos","nav.toolbox":"Herramientas","nav.cta":"Ver en GitHub",
+    "hero.tag":"PORTAFOLIO ACTIVO · ACTUALIZADO 2026",
+    "hero.h1":"De la investigación criminal<br>a la <span>defensa digital.</span>",
+    "hero.lead":"Estudiante de Ingeniería en Ciberseguridad con formación previa en Investigación Criminal. Este archivo reúne laboratorios ofensivos y defensivos, análisis forense y auditorías construidas en entornos controlados y aislados.",
+    "hero.stamp1":"BLUE TEAM · EDR","hero.stamp2":"OSINT · RECON","hero.stamp3":"REVERSE ENGINEERING","hero.stamp4":"ITGC · AUDITORÍA",
+    "hero.btnCases":"Ver casos destacados","hero.btnRepo":"Repositorio completo",
+    "about.eyebrow":"// 01 — Perfil","about.h2":"Quién investiga este archivo",
+    "about.p1":"<strong>Ingeniería en Ciberseguridad</strong> en la Universidad Tecnológica de Panamá, con un punto de partida poco común: un background en <strong>Investigación Criminal</strong>.",
+    "about.p2":"Esa formación se traduce directamente en cómo trabajo la ciberseguridad: reconstruir la cadena de eventos, preservar evidencia, y entender el mecanismo de un ataque antes de diseñar la defensa que lo detiene.",
+    "about.p3":"Este repositorio agrupa laboratorios prácticos organizados por nivel de profundidad técnica — desde fundamentos criptográficos hasta pentesting de infraestructura Active Directory y arquitecturas Zero Trust.",
+    "about.l1":"FORMACIÓN","about.v1":"Ing. Ciberseguridad · UTP",
+    "about.l2":"BACKGROUND","about.v2":"Investigación Criminal",
+    "about.l3":"SISTEMAS","about.v3":"Windows Server, Win 10/11, Linux",
+    "about.l4":"ANÁLISIS","about.v4":"IDA Pro, WinDbg, Sysmon, Wireshark",
+    "about.l5":"SCRIPTING",
+    "about.l6":"LABS DOCUMENTADOS","about.v6":"13 proyectos activos",
+    "focus.eyebrow":"// 02 — Áreas de enfoque","focus.h2":"En qué se especializa esta investigación",
+    "focus.t1":"Blue Team & EDR","focus.d1":"Detección de amenazas, análisis de memoria/procesos y desarrollo de contramedidas defensivas.",
+    "focus.t2":"OSINT & Recon","focus.d2":"Inteligencia de fuentes abiertas, mapeo de infraestructura y recolección de threat intelligence.",
+    "focus.t3":"Reverse Engineering","focus.d3":"Análisis estático y dinámico de código, inspección de drivers y estructuras de kernel.",
+    "focus.t4":"Auditoría & ITGC","focus.d4":"Evaluación de controles generales de TI, gestión de accesos y cumplimiento de políticas.",
+    "cases.eyebrow":"// 03 — Casos destacados","cases.h2":"Expedientes seleccionados",
+    "cases.desc":"Pasa el cursor (o toca en móvil) sobre las líneas redactadas para revelar el hallazgo de cada caso.",
+    "cases.status":"EXPEDIENTE CERRADO","cases.hint":"revelar hallazgo →","cases.link":"Ver expediente completo",
+    "case1.num":"CASO 01-A · AVANZADO","case1.summary":"Diseño e implementación de una arquitectura Zero Trust para una WLAN corporativa, en tres fases: análisis teórico, prototipo en Packet Tracer y laboratorio real con pfSense + Cloudflare.","case1.finding":"Hallazgo: red corporativa segmentada sin acceso implícito por defecto.",
+    "case2.num":"CASO 01-B · AVANZADO","case2.summary":"Evaluación de un entorno Active Directory Certificate Services construido manualmente en Windows Server 2019, con explotación de plantillas de certificados vulnerables.","case2.finding":"Hallazgo: cadena ESC1→PKINIT permitió obtener Domain Admin en menos de 2 horas.",
+    "case3.num":"CASO 01-C · AVANZADO","case3.summary":"Infraestructura SIEM/XDR con Wazuh para detectar y analizar eventos generados por ataques simulados, mapeados a la matriz MITRE ATT&CK.","case3.finding":"Hallazgo: 3 técnicas de movimiento lateral detectadas y mapeadas a MITRE.",
+    "case4.num":"CASO 01-D · AVANZADO","case4.summary":"Reconocimiento pasivo sobre infraestructuras reales para identificar vectores de ataque, fugas de metadatos y configuraciones erróneas sin acciones intrusivas.","case4.finding":"Hallazgo: perfiles ejecutivos expuestos vía búsqueda global en Teams.","case4.tag":"MS Teams","case4.tag2":"Enumeración de identidad",
+    "case5.num":"CASO 02-A · INTERMEDIO","case5.summary":"Evaluación de seguridad web con Burp Suite contra OWASP Juice Shop, identificando 10 fallos de seguridad, 5 de severidad crítica.","case5.finding":"Hallazgo: 5 vulnerabilidades críticas explotables sin autenticación.",
+    "case6.num":"CASO 02-B · INTERMEDIO","case6.summary":"Endurecimiento de un servidor SSH validado con ataques de fuerza bruta controlados desde Kali Linux, comparando el comportamiento antes y después.","case6.finding":"Hallazgo: fuerza bruta bloqueada tras 3 intentos, 0% de éxito post-hardening.",
+    "more.eyebrow":"// 04 — Archivo completo","more.h2":"Laboratorios adicionales","more.desc":"El resto de expedientes documentados en el repositorio, organizados por nivel.","more.view":"Ver",
+    "lab1":"Sistema experto + XGBoost para triage de alertas · AVANZADO",
+    "lab2":"DNS, Tunnel, SSL/TLS y reglas WAF personalizadas · INTERMEDIO",
+    "lab3":"PKI propia con EasyRSA sobre Ubuntu Server · INTERMEDIO",
+    "lab4":"BitLocker, TPM 2.0, auditoría Nmap, script PowerShell · INTERMEDIO",
+    "lab5":"Resistencia de algoritmos de hashing ante ataques de diccionario · FUNDAMENTOS",
+    "lab6":"Criptografía asimétrica y firma digital · FUNDAMENTOS",
+    "lab7":"Comunicación cifrada en servidor web con certificado propio · FUNDAMENTOS",
+    "lab8":"Programas de experiencia virtual en ciberseguridad · INTRODUCCIÓN",
+    "toolbox.eyebrow":"// 05 — Kit de herramientas","toolbox.h2":"Equipo de campo",
+    "footer.h2":"¿Hablamos?","footer.p":"Abierta a oportunidades en Blue Team, análisis de amenazas y auditoría de seguridad.",
+    "footer.readme":"README en Español","footer.disclaimer":"⚠️ Todo el contenido, investigación y código de este repositorio fue desarrollado exclusivamente con fines educativos y de investigación defensiva, dentro de entornos de prueba aislados.",
+    "footer.uni":"Universidad Tecnológica de Panamá"
+  },
+  en: {
+    "nav.caseFile":"CASE FILE","nav.about":"Profile","nav.focus":"Focus","nav.cases":"Projects","nav.toolbox":"Toolbox","nav.cta":"View on GitHub",
+    "hero.tag":"ACTIVE PORTFOLIO · UPDATED 2026",
+    "hero.h1":"From criminal investigation<br>to <span>digital defense.</span>",
+    "hero.lead":"Cybersecurity Engineering student with a background in Criminal Investigation. This case file brings together offensive and defensive labs, forensic analysis, and audits built in controlled, isolated environments.",
+    "hero.stamp1":"BLUE TEAM · EDR","hero.stamp2":"OSINT · RECON","hero.stamp3":"REVERSE ENGINEERING","hero.stamp4":"ITGC · AUDITING",
+    "hero.btnCases":"View featured cases","hero.btnRepo":"Full repository",
+    "about.eyebrow":"// 01 — Profile","about.h2":"Who's behind this case file",
+    "about.p1":"<strong>Cybersecurity Engineering</strong> student at the Technological University of Panama, with an uncommon starting point: a background in <strong>Criminal Investigation</strong>.",
+    "about.p2":"That training shapes how I approach cybersecurity directly: reconstruct the chain of events, preserve evidence, and understand the mechanics of an attack before designing the defense that stops it.",
+    "about.p3":"This repository groups hands-on labs organized by technical depth — from cryptographic fundamentals to Active Directory pentesting and Zero Trust architectures.",
+    "about.l1":"EDUCATION","about.v1":"B.S. Cybersecurity Eng. · UTP",
+    "about.l2":"BACKGROUND","about.v2":"Criminal Investigation",
+    "about.l3":"SYSTEMS","about.v3":"Windows Server, Win 10/11, Linux",
+    "about.l4":"ANALYSIS","about.v4":"IDA Pro, WinDbg, Sysmon, Wireshark",
+    "about.l5":"SCRIPTING",
+    "about.l6":"LABS DOCUMENTED","about.v6":"13 active projects",
+    "focus.eyebrow":"// 02 — Focus areas","focus.h2":"What this investigation specializes in",
+    "focus.t1":"Blue Team & EDR","focus.d1":"Threat detection, memory/process analysis, and defensive countermeasure development.",
+    "focus.t2":"OSINT & Recon","focus.d2":"Open-source intelligence gathering, infrastructure mapping, and threat intelligence collection.",
+    "focus.t3":"Reverse Engineering","focus.d3":"Static and dynamic code analysis, driver inspection, and kernel structures.",
+    "focus.t4":"Auditing & ITGC","focus.d4":"IT General Controls evaluation, access management, and security policy compliance.",
+    "cases.eyebrow":"// 03 — Featured cases","cases.h2":"Selected case files",
+    "cases.desc":"Hover (or tap on mobile) over the redacted lines to reveal each case's key finding.",
+    "cases.status":"CASE CLOSED","cases.hint":"reveal finding →","cases.link":"View full case file",
+    "case1.num":"CASE 01-A · ADVANCED","case1.summary":"Design and implementation of a Zero Trust architecture for a corporate WLAN, in three phases: theoretical analysis, Packet Tracer prototype, and a real lab with pfSense + Cloudflare.","case1.finding":"Finding: corporate network segmented with no implicit default access.",
+    "case2.num":"CASE 01-B · ADVANCED","case2.summary":"Security assessment of an Active Directory Certificate Services environment built manually on Windows Server 2019, exploiting vulnerable certificate templates.","case2.finding":"Finding: ESC1→PKINIT chain achieved Domain Admin in under 2 hours.",
+    "case3.num":"CASE 01-C · ADVANCED","case3.summary":"SIEM/XDR infrastructure with Wazuh to detect and analyze events generated by simulated attacks, mapped to the MITRE ATT&CK matrix.","case3.finding":"Finding: 3 lateral movement techniques detected and mapped to MITRE.",
+    "case4.num":"CASE 01-D · ADVANCED","case4.summary":"Passive reconnaissance on real infrastructures to identify attack vectors, metadata leaks, and misconfigurations without intrusive actions.","case4.finding":"Finding: executive profiles exposed via global directory search in Teams.","case4.tag":"MS Teams","case4.tag2":"Identity enumeration",
+    "case5.num":"CASE 02-A · INTERMEDIATE","case5.summary":"Web security assessment with Burp Suite against OWASP Juice Shop, identifying 10 security flaws, 5 of critical severity.","case5.finding":"Finding: 5 critical vulnerabilities exploitable without authentication.",
+    "case6.num":"CASE 02-B · INTERMEDIATE","case6.summary":"Hardening of an SSH server, validated with controlled brute-force attacks from Kali Linux, comparing behavior before and after.","case6.finding":"Finding: brute force blocked after 3 attempts, 0% success post-hardening.",
+    "more.eyebrow":"// 04 — Full archive","more.h2":"Additional labs","more.desc":"The rest of the case files documented in the repository, organized by level.","more.view":"View",
+    "lab1":"Rule-based expert system + XGBoost for alert triage · ADVANCED",
+    "lab2":"DNS, Tunnel, SSL/TLS and custom WAF rules · INTERMEDIATE",
+    "lab3":"Self-managed PKI with EasyRSA on Ubuntu Server · INTERMEDIATE",
+    "lab4":"BitLocker, TPM 2.0, Nmap audit, PowerShell automation script · INTERMEDIATE",
+    "lab5":"Resistance of hashing algorithms against dictionary attacks · FOUNDATIONS",
+    "lab6":"Asymmetric cryptography and digital signatures · FOUNDATIONS",
+    "lab7":"Encrypted communication on a web server with a self-signed certificate · FOUNDATIONS",
+    "lab8":"Cybersecurity virtual experience programs · INTRO",
+    "toolbox.eyebrow":"// 05 — Toolkit","toolbox.h2":"Field kit",
+    "footer.h2":"Let's talk","footer.p":"Open to opportunities in Blue Team, threat analysis, and security auditing.",
+    "footer.readme":"README in English","footer.disclaimer":"⚠️ All content, research, and code in this repository was developed exclusively for educational and defensive research purposes, within isolated test environments.",
+    "footer.uni":"Technological University of Panama"
+  }
+};
+
+function setLang(lang){
+  document.getElementById('html-root').setAttribute('lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-html');
+    if(translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+  });
+  document.querySelectorAll('.lang-toggle button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  const readme = document.getElementById('readme-link');
+  readme.href = lang === 'en'
+    ? 'https://github.com/NicoleS3009/Cybersecurity-Portfolio/blob/main/README.md'
+    : 'https://github.com/NicoleS3009/Cybersecurity-Portfolio/blob/main/README-es.md';
+  try{ localStorage.setItem('portfolio-lang', lang); }catch(e){}
+}
+
+document.querySelectorAll('.lang-toggle button').forEach(btn=>{
+  btn.addEventListener('click', ()=> setLang(btn.getAttribute('data-lang')));
+});
+
+document.querySelectorAll('.redact-line').forEach(function(el){
+  el.addEventListener('click', function(){ el.classList.toggle('open'); });
+});
+
+(function initLang(){
+  let saved = null;
+  try{ saved = localStorage.getItem('portfolio-lang'); }catch(e){}
+  const browserLang = (navigator.language || 'es').toLowerCase().startsWith('en') ? 'en' : 'es';
+  setLang(saved || browserLang);
+})();
+</script>
+</body>
+</html>
