@@ -27,3 +27,4 @@ Este espacio reúne análisis prácticos, desarrollo de herramientas y laborator
 
 ⚠️ **Aviso de Ética y Responsabilidad:**  
 *Todo el contenido, investigaciones y código en este repositorio han sido desarrollados exclusivamente con fines educativos, de investigación defensiva y dentro de entornos de prueba aislados. No me responsabilizo por el uso indebido del material expuesto.*
+
